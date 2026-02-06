@@ -250,6 +250,18 @@ def generate_markdown(data, period, output_path):
 
         md += "---\n\n"
 
+    # GitHub 활동 없는 멤버 리스트
+    no_github_members = [m for m, d in sorted_members
+                         if d['github']['commit'] + d['github']['pr'] + d['github']['review'] == 0
+                         and calculate_score(d) > 0]
+
+    if no_github_members:
+        md += "### No GitHub Activity\n\n"
+        md += "다음 멤버는 이번 기간 GitHub 활동이 없습니다:\n\n"
+        for member in no_github_members:
+            md += f"- {member}\n"
+        md += "\n---\n\n"
+
     # Individual Details
     md += """
 ## Individual Details
@@ -310,6 +322,9 @@ def generate_html(data, period, output_path):
     active_members = [(m, d) for m, d in sorted_members if calculate_score(d) > 0]
     github_members = [(m, d) for m, d in sorted_members
                       if d['github']['commit'] + d['github']['pr'] + d['github']['review'] > 0]
+    no_github_members = [m for m, d in sorted_members
+                         if d['github']['commit'] + d['github']['pr'] + d['github']['review'] == 0
+                         and calculate_score(d) > 0]
 
     # 전체 통계
     total = {
@@ -526,6 +541,16 @@ def generate_html(data, period, output_path):
             color: #aaa;
             border-left: 3px solid #238636;
         }}
+        .no-github-section {{
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }}
+        .no-github-section h3 {{ margin-bottom: 10px; color: #888; }}
+        .no-github-section p {{ color: #666; font-size: 0.9em; margin-bottom: 10px; }}
+        .no-github-list {{ color: #aaa; font-size: 0.95em; }}
 
         @media (max-width: 768px) {{
             .summary {{ grid-template-columns: repeat(2, 1fr); }}
@@ -601,6 +626,7 @@ def generate_html(data, period, output_path):
         <div class="github-grid">
             {github_details_html}
         </div>
+        {'<div class="no-github-section"><h3>No GitHub Activity</h3><p>다음 멤버는 이번 기간 GitHub 활동이 없습니다:</p><div class="no-github-list">' + ', '.join(no_github_members) + '</div></div>' if no_github_members else ''}
     </div>
 
     <script>
