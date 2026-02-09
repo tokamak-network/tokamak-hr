@@ -50,6 +50,28 @@ python3 generate_onboarding_package.py --live
 - `welcome_<name>.txt` - 텍스트 요약
 - OT 3분 데모 대본 섹션 포함
 
+## Bulk Generation (CSV)
+
+Google Sheets에서 CSV로 다운로드한 뒤, 여러 신규입사자용 파일을 일괄 생성할 수 있습니다.
+
+### CSV Columns
+
+Required:
+- `name`
+
+Optional:
+- `team`
+- `start_date`
+- `account_email`
+- `account_password`
+- `video_url`
+
+### Usage
+
+```bash
+python3 generate_onboarding_package.py --csv new_hires.csv
+```
+
 ## Data Source
 
 통합 CSV 파일 (source 컬럼으로 구분):

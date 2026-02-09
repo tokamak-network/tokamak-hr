@@ -8,6 +8,8 @@ import datetime as dt
 import os
 import re
 import sys
+import shutil
+import csv
 from string import Template
 
 
@@ -42,33 +44,30 @@ HTML_TEMPLATE = Template(
     <div class=\"section\">
       <h2>1) Watch the onboarding video 🎬</h2>
       <p>Video link: <a href=\"$video_url\">$video_url</a></p>
+      <video controls style=\"max-width:100%; margin-top: 12px; border-radius: 12px;\">
+        <source src=\"$video_url\" type=\"video/mp4\">
+      </video>
       <p class=\"meta\">Approx. duration: $video_duration</p>
     </div>
 
-    <div class=\"section\">
-      <h2>OT script (3-minute demo) 📝</h2>
-      <p class=\"meta\">Use this script to generate the avatar video.</p>
-      <ol>
-        $ot_script_items
-      </ol>
-    </div>
+    $ot_script_section
 
     <div class=\"section\">
-      <h2>2) Your first-week checklist ✅</h2>
+      <h2>$checklist_heading ✅</h2>
       <ul class="checklist">
         $checklist_items
       </ul>
     </div>
 
     <div class=\"section\">
-      <h2>3) Account details 🔐</h2>
+      <h2>$account_heading 🔐</h2>
       <ul>
         $account_items
       </ul>
     </div>
 
     <div class=\"section\">
-      <h2>4) Contacts 🤝</h2>
+      <h2>$contacts_heading 🤝</h2>
       <p>Managing Director: $managing_director</p>
       <p>HR Manager: $manager</p>
     </div>
@@ -91,16 +90,13 @@ Start date: $start_date
 - $video_url
 (Duration: $video_duration)
 
-2) OT script (3-minute demo)
-$ot_script_text
-
-3) First-week checklist
+${ot_script_text_block}2) First-week checklist
 $checklist_text
 
-4) Account details
+3) Account details
 $account_text
 
-5) Contacts
+4) Contacts
 - Managing Director: $managing_director
 - HR Manager: $manager
 """
@@ -178,6 +174,52 @@ def to_numbered(items: list[str]) -> str:
 def to_text_bullets(items: list[str]) -> str:
     return "\n".join(f"- {item}" for item in items)
 
+def build_ot_script_section(items: list[str]) -> str:
+    if not items:
+        return ""
+    return (
+        "<div class=\"section\">"
+        "<h2>2) OT script (3-minute demo) 📝</h2>"
+        "<p class=\"meta\">Use this script to generate the avatar video.</p>"
+        "<ol>"
+        f"{to_numbered(items)}"
+        "</ol>"
+        "</div>"
+    )
+
+def build_ot_script_text_block(items: list[str]) -> str:
+    if not items:
+        return ""
+    return "2) OT script (3-minute demo)\n" + to_text_bullets(items) + "\n\n"
+
+def build_headings(include_script: bool) -> tuple[str, str, str]:
+    if include_script:
+        return ("3) Your first-week checklist", "4) Account details", "5) Contacts")
+    return ("2) Your first-week checklist", "3) Account details", "4) Contacts")
+
+def build_ot_script_section(items: list[str]) -> str:
+    if not items:
+        return ""
+    return (
+        "<div class=\"section\">"
+        "<h2>2) OT script (3-minute demo) 📝</h2>"
+        "<p class=\"meta\">Use this script to generate the avatar video.</p>"
+        "<ol>"
+        f"{to_numbered(items)}"
+        "</ol>"
+        "</div>"
+    )
+
+def build_ot_script_text_block(items: list[str]) -> str:
+    if not items:
+        return ""
+    return "2) OT script (3-minute demo)\n" + to_text_bullets(items) + "\n\n"
+
+def build_headings(include_script: bool) -> tuple[str, str, str]:
+    if include_script:
+        return ("3) Your first-week checklist", "4) Account details", "5) Contacts")
+    return ("2) Your first-week checklist", "3) Account details", "4) Contacts")
+
 
 def ascii_safe(text: str) -> str:
     return text.encode("ascii", errors="replace").decode("ascii")
@@ -223,6 +265,115 @@ def write_minimal_pdf(path: str, lines: list[str]) -> None:
         f.write(output)
 
 
+def generate_one(
+    *,
+    name: str,
+    team: str,
+    start_date: str,
+    video_url: str,
+    output_dir: str,
+    video_duration: str,
+    account_email: str,
+    account_password: str,
+    manager: str,
+    managing_director: str,
+    include_script: bool,
+    video_file: str | None,
+) -> int:
+    if video_file:
+        video_basename = os.path.basename(video_file)
+        os.makedirs(output_dir, exist_ok=True)
+        dst_path = os.path.join(output_dir, video_basename)
+        if not os.path.exists(video_file):
+            print(f"Video file not found: {video_file}", file=sys.stderr)
+            return 1
+        shutil.copy2(video_file, dst_path)
+        video_url = video_basename
+    if not video_url:
+        video_url = "TBD"
+
+    checklist_items = DEFAULT_CHECKLIST_HTML
+    account_items = [
+        f"Account: {account_email}",
+        f"Password: {account_password}",
+    ]
+    ot_script_items = DEFAULT_OT_SCRIPT if include_script else []
+    checklist_heading, account_heading, contacts_heading = build_headings(include_script)
+
+    html = HTML_TEMPLATE.substitute(
+        name=name,
+        team=team,
+        start_date=start_date,
+        video_url=video_url,
+        video_duration=video_duration,
+        ot_script_section=build_ot_script_section(ot_script_items),
+        checklist_heading=checklist_heading,
+        account_heading=account_heading,
+        contacts_heading=contacts_heading,
+        checklist_items=to_bullets(checklist_items),
+        account_items=to_bullets(account_items),
+        manager=manager,
+        managing_director=managing_director,
+    )
+
+    txt = TXT_TEMPLATE.substitute(
+        name=name,
+        team=team,
+        start_date=start_date,
+        video_url=video_url,
+        video_duration=video_duration,
+        ot_script_text_block=build_ot_script_text_block(ot_script_items),
+        checklist_text=to_text_bullets(DEFAULT_CHECKLIST_TEXT),
+        account_text=to_text_bullets(account_items),
+        manager=manager,
+        managing_director=managing_director,
+    )
+
+    base = f"welcome_{sanitize_filename(name)}"
+    os.makedirs(output_dir, exist_ok=True)
+    html_path = os.path.join(output_dir, f"{base}.html")
+    txt_path = os.path.join(output_dir, f"{base}.txt")
+    pdf_path = os.path.join(output_dir, f"{base}.pdf")
+
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html)
+    with open(txt_path, "w", encoding="utf-8") as f:
+        f.write(txt)
+
+    # PDF generation is ASCII-only; non-ASCII will be replaced with '?'.
+    pdf_lines = [
+        f"Welcome, {name}",
+        f"Team: {team}",
+        f"Start date: {start_date}",
+        "",
+        "Onboarding video:",
+        f"- {video_url}",
+        f"- Duration: {video_duration}",
+        "",
+        "Checklist:",
+        *[f"- {item}" for item in checklist_items],
+        "",
+        "Account details:",
+        *[f"- {item}" for item in account_items],
+        "",
+        f"Managing Director: {managing_director}",
+        f"HR Manager: {manager}",
+    ]
+    if ot_script_items:
+        script_lines = ["OT script (3-minute demo):", *[f"- {item}" for item in ot_script_items], ""]
+        pdf_lines[8:8] = script_lines
+    write_minimal_pdf(pdf_path, pdf_lines)
+
+    non_ascii_found = any(any(ord(ch) > 127 for ch in line) for line in pdf_lines)
+    if non_ascii_found:
+        print("Note: PDF is ASCII-only; non-ASCII characters were replaced with '?'.")
+
+    print(f"Generated: {html_path}")
+    print(f"Generated: {pdf_path}")
+    print(f"Generated: {txt_path}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate onboarding package files.")
     parser.add_argument("--name")
@@ -234,13 +385,51 @@ def main() -> int:
     parser.add_argument("--managing-director", default="Jaden (jaden@tokamak.network)")
     parser.add_argument("--account-email", default=DEFAULT_ACCOUNT_EMAIL)
     parser.add_argument("--account-password", default=DEFAULT_ACCOUNT_PASSWORD)
+    parser.add_argument("--video-file", help="Local MP4 file to copy into output dir.")
+    parser.add_argument("--csv", help="CSV file for bulk generation.")
     parser.add_argument("--output-dir", default=".")
     parser.add_argument(
         "--live",
         action="store_true",
         help="Run in a loop for live demo (regenerates files each time).",
     )
+    parser.add_argument(
+        "--include-script",
+        action="store_true",
+        help="Include OT script section in outputs.",
+    )
     args = parser.parse_args()
+
+    if args.csv:
+        with open(args.csv, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                name = (row.get("name") or "").strip()
+                if not name:
+                    continue
+                team = (row.get("team") or "").strip()
+                start_date = (row.get("start_date") or "").strip() or dt.date.today().isoformat()
+                video_url = (row.get("video_url") or "").strip()
+                account_email = (row.get("account_email") or args.account_email).strip()
+                account_password = (row.get("account_password") or args.account_password).strip()
+                manager = args.manager
+                managing_director = args.managing_director
+
+                generate_one(
+                    name=name,
+                    team=team,
+                    start_date=start_date,
+                    video_url=video_url,
+                    output_dir=args.output_dir,
+                    video_duration=args.video_duration,
+                    account_email=account_email,
+                    account_password=account_password,
+                    manager=manager,
+                    managing_director=managing_director,
+                    include_script=args.include_script,
+                    video_file=args.video_file,
+                )
+        return 0
 
     while True:
         name = args.name or prompt("New hire name:")
@@ -248,83 +437,22 @@ def main() -> int:
         start_date = args.start_date or prompt("Start date (YYYY-MM-DD):", dt.date.today().isoformat())
         video_url = args.video_url or prompt("Onboarding video URL:", "TBD")
 
-        checklist_items = DEFAULT_CHECKLIST_HTML
-        account_items = [
-            f"Account: {args.account_email}",
-            f"Password: {args.account_password}",
-        ]
-        ot_script_items = DEFAULT_OT_SCRIPT
-
-        html = HTML_TEMPLATE.substitute(
+        generate_one(
             name=name,
             team=team,
             start_date=start_date,
             video_url=video_url,
+            output_dir=args.output_dir,
             video_duration=args.video_duration,
-            ot_script_items=to_numbered(ot_script_items),
-            checklist_items=to_bullets(checklist_items),
-            account_items=to_bullets(account_items),
+            account_email=args.account_email,
+            account_password=args.account_password,
             manager=args.manager,
             managing_director=args.managing_director,
+            include_script=args.include_script,
+            video_file=args.video_file,
         )
 
-        txt = TXT_TEMPLATE.substitute(
-            name=name,
-            team=team,
-            start_date=start_date,
-            video_url=video_url,
-            video_duration=args.video_duration,
-            ot_script_text=to_text_bullets(ot_script_items),
-            checklist_text=to_text_bullets(DEFAULT_CHECKLIST_TEXT),
-            account_text=to_text_bullets(account_items),
-            manager=args.manager,
-            managing_director=args.managing_director,
-        )
-
-        base = f"welcome_{sanitize_filename(name)}"
-        os.makedirs(args.output_dir, exist_ok=True)
-        html_path = os.path.join(args.output_dir, f"{base}.html")
-        txt_path = os.path.join(args.output_dir, f"{base}.txt")
-        pdf_path = os.path.join(args.output_dir, f"{base}.pdf")
-
-        with open(html_path, "w", encoding="utf-8") as f:
-            f.write(html)
-        with open(txt_path, "w", encoding="utf-8") as f:
-            f.write(txt)
-
-        # PDF generation is ASCII-only; non-ASCII will be replaced with '?'.
-        pdf_lines = [
-            f"Welcome, {name}",
-            f"Team: {team}",
-            f"Start date: {start_date}",
-            "",
-            "Onboarding video:",
-            f"- {video_url}",
-            f"- Duration: {args.video_duration}",
-            "",
-            "OT script (3-minute demo):",
-            *[f"- {item}" for item in ot_script_items],
-            "",
-            "Checklist:",
-            *[f"- {item}" for item in checklist_items],
-            "",
-            "Account details:",
-            *[f"- {item}" for item in account_items],
-            "",
-            f"Managing Director: {args.managing_director}",
-            f"HR Manager: {args.manager}",
-        ]
-        write_minimal_pdf(pdf_path, pdf_lines)
-
-        non_ascii_found = any(any(ord(ch) > 127 for ch in line) for line in pdf_lines)
-        if non_ascii_found:
-            print("Note: PDF is ASCII-only; non-ASCII characters were replaced with '?'.")
-
-        print(f"Generated: {html_path}")
-        print(f"Generated: {pdf_path}")
-        print(f"Generated: {txt_path}")
-
-        if not args.live and args.name and args.team and args.start_date and args.video_url:
+        if not args.live and args.name and args.team and args.start_date and (args.video_url or args.video_file):
             return 0
         if not args.live:
             return 0
