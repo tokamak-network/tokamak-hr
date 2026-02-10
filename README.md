@@ -65,11 +65,47 @@ Optional:
 - `account_email`
 - `account_password`
 - `video_url`
+- `welcome_url`
 
 ### Usage
 
 ```bash
 python3 generate_onboarding_package.py --csv new_hires.csv
+```
+
+## Google Drive Upload (OAuth)
+
+자동 업로드로 welcome HTML과 영상을 Google Drive에 올리고, 공유 링크를 생성할 수 있습니다.
+
+### 1) Install dependencies
+```bash
+python3 -m pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+```
+
+### 2) Create OAuth credentials
+1. Google Cloud Console에서 OAuth Client(Desktop App) 생성
+2. `credentials.json` 다운로드
+3. `tokamak-hr/` 폴더에 `credentials.json` 저장
+
+### 3) Run with Drive upload
+```bash
+python3 generate_onboarding_package.py --csv new_hires.csv --drive-upload --drive-folder-id YOUR_FOLDER_ID --video-file "/path/to/video.mp4"
+```
+
+업로드 후 `welcome_url`이 CSV에 자동으로 채워집니다.
+
+### Slack DM (optional)
+
+1) Create a Slack app and install it to the workspace.
+2) Add Bot Token Scopes: `chat:write`, `users:read.email`, `im:write`
+3) Set env var:
+```bash
+export SLACK_BOT_TOKEN="xoxb-..."
+```
+4) Include `welcome_url` in CSV (shareable link to the HTML page).
+5) Run:
+```bash
+python3 generate_onboarding_package.py --csv new_hires.csv --send-slack
 ```
 
 ## Data Source

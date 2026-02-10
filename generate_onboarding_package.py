@@ -10,6 +10,9 @@ import re
 import sys
 import shutil
 import csv
+import json
+import urllib.request
+import urllib.error
 from string import Template
 
 
@@ -197,6 +200,93 @@ def build_headings(include_script: bool) -> tuple[str, str, str]:
         return ("3) Your first-week checklist", "4) Account details", "5) Contacts")
     return ("2) Your first-week checklist", "3) Account details", "4) Contacts")
 
+def slack_api_call(token: str, endpoint: str, payload: dict) -> dict:
+    url = f"https://slack.com/api/{endpoint}"
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(
+        url,
+        data=data,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json; charset=utf-8",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req) as resp:
+            body = resp.read().decode("utf-8")
+            return json.loads(body)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8")
+        raise RuntimeError(f"Slack API error: {e.code} {body}") from e
+
+def slack_lookup_user_id(token: str, email: str) -> str | None:
+    resp = slack_api_call(token, "users.lookupByEmail", {"email": email})
+    if not resp.get("ok"):
+        return None
+    return resp.get("user", {}).get("id")
+
+def slack_open_dm(token: str, user_id: str) -> str | None:
+    resp = slack_api_call(token, "conversations.open", {"users": user_id})
+    if not resp.get("ok"):
+        return None
+    return resp.get("channel", {}).get("id")
+
+def slack_send_dm(token: str, channel_id: str, text: str) -> bool:
+    resp = slack_api_call(token, "chat.postMessage", {"channel": channel_id, "text": text})
+    return bool(resp.get("ok"))
+
+def get_drive_service(credentials_path: str, token_path: str):
+    try:
+        from googleapiclient.discovery import build
+        from google.oauth2.credentials import Credentials
+        from google_auth_oauthlib.flow import InstalledAppFlow
+        from google.auth.transport.requests import Request
+    except ImportError as e:
+        raise RuntimeError(
+            "Missing Google client libraries. Install: "
+            "python3 -m pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib"
+        ) from e
+
+    scopes = ["https://www.googleapis.com/auth/drive.file"]
+    creds = None
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, scopes)
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(credentials_path, scopes)
+            creds = flow.run_local_server(port=0)
+        with open(token_path, "w", encoding="utf-8") as f:
+            f.write(creds.to_json())
+    return build("drive", "v3", credentials=creds)
+
+def drive_upload_file(service, file_path: str, file_name: str, folder_id: str) -> str:
+    try:
+        from googleapiclient.http import MediaFileUpload
+    except ImportError as e:
+        raise RuntimeError(
+            "Missing Google client libraries. Install: "
+            "python3 -m pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib"
+        ) from e
+
+    file_metadata = {"name": file_name, "parents": [folder_id]}
+    media = MediaFileUpload(file_path, resumable=True)
+    created = service.files().create(body=file_metadata, media_body=media, fields="id,webViewLink").execute()
+    return created["id"]
+
+def drive_set_anyone_with_link(service, file_id: str) -> None:
+    permission = {"type": "anyone", "role": "reader"}
+    service.permissions().create(fileId=file_id, body=permission).execute()
+
+def drive_get_webview_link(service, file_id: str) -> str:
+    info = service.files().get(fileId=file_id, fields="webViewLink").execute()
+    return info.get("webViewLink", "")
+
+def drive_direct_link(file_id: str) -> str:
+    return f"https://drive.google.com/uc?export=download&id={file_id}"
+
 def build_ot_script_section(items: list[str]) -> str:
     if not items:
         return ""
@@ -279,16 +369,30 @@ def generate_one(
     managing_director: str,
     include_script: bool,
     video_file: str | None,
+    drive_service=None,
+    drive_folder_id: str | None = None,
 ) -> int:
-    if video_file:
+    if video_file and not os.path.exists(video_file):
+        print(f"Video file not found: {video_file}", file=sys.stderr)
+        return 1, ""
+
+    if drive_service and drive_folder_id and video_file:
+        video_id = drive_upload_file(
+            drive_service,
+            video_file,
+            os.path.basename(video_file),
+            drive_folder_id,
+        )
+        drive_set_anyone_with_link(drive_service, video_id)
+        video_url = drive_direct_link(video_id)
+    elif video_file:
         video_basename = os.path.basename(video_file)
         os.makedirs(output_dir, exist_ok=True)
         dst_path = os.path.join(output_dir, video_basename)
-        if not os.path.exists(video_file):
-            print(f"Video file not found: {video_file}", file=sys.stderr)
-            return 1
-        shutil.copy2(video_file, dst_path)
+        if os.path.abspath(video_file) != os.path.abspath(dst_path):
+            shutil.copy2(video_file, dst_path)
         video_url = video_basename
+
     if not video_url:
         video_url = "TBD"
 
@@ -371,7 +475,14 @@ def generate_one(
     print(f"Generated: {html_path}")
     print(f"Generated: {pdf_path}")
     print(f"Generated: {txt_path}")
-    return 0
+
+    if drive_service and drive_folder_id:
+        html_id = drive_upload_file(drive_service, html_path, os.path.basename(html_path), drive_folder_id)
+        drive_set_anyone_with_link(drive_service, html_id)
+        welcome_url = drive_get_webview_link(drive_service, html_id)
+        return 0, welcome_url
+
+    return 0, ""
 
 
 def main() -> int:
@@ -388,6 +499,18 @@ def main() -> int:
     parser.add_argument("--video-file", help="Local MP4 file to copy into output dir.")
     parser.add_argument("--csv", help="CSV file for bulk generation.")
     parser.add_argument("--output-dir", default=".")
+    parser.add_argument("--drive-upload", action="store_true", help="Upload HTML/video to Google Drive.")
+    parser.add_argument("--drive-folder-id", help="Google Drive folder ID for uploads.")
+    parser.add_argument(
+        "--drive-credentials",
+        default="credentials.json",
+        help="OAuth client credentials JSON for Drive API.",
+    )
+    parser.add_argument(
+        "--drive-token",
+        default="token.json",
+        help="Token cache path for Drive API.",
+    )
     parser.add_argument(
         "--live",
         action="store_true",
@@ -398,12 +521,31 @@ def main() -> int:
         action="store_true",
         help="Include OT script section in outputs.",
     )
+    parser.add_argument(
+        "--send-slack",
+        action="store_true",
+        help="Send Slack DM after generating (requires SLACK_BOT_TOKEN).",
+    )
     args = parser.parse_args()
+
+    slack_token = os.getenv("SLACK_BOT_TOKEN") if args.send_slack else None
+    if args.send_slack and not slack_token:
+        print("Missing SLACK_BOT_TOKEN env var for Slack DM.", file=sys.stderr)
+        return 1
+
+    drive_service = None
+    if args.drive_upload:
+        if not args.drive_folder_id:
+            print("Missing --drive-folder-id for Drive upload.", file=sys.stderr)
+            return 1
+        drive_service = get_drive_service(args.drive_credentials, args.drive_token)
 
     if args.csv:
         with open(args.csv, newline="", encoding="utf-8") as f:
             reader = csv.DictReader(f)
-            for row in reader:
+            fieldnames = reader.fieldnames or []
+            rows = list(reader)
+            for row in rows:
                 name = (row.get("name") or "").strip()
                 if not name:
                     continue
@@ -414,8 +556,13 @@ def main() -> int:
                 account_password = (row.get("account_password") or args.account_password).strip()
                 manager = args.manager
                 managing_director = args.managing_director
+                slack_email = account_email
+                welcome_url = (row.get("welcome_url") or "").strip()
+                video_file = args.video_file
+                if not video_file and video_url and os.path.exists(video_url):
+                    video_file = video_url
 
-                generate_one(
+                _, uploaded_welcome_url = generate_one(
                     name=name,
                     team=team,
                     start_date=start_date,
@@ -427,8 +574,40 @@ def main() -> int:
                     manager=manager,
                     managing_director=managing_director,
                     include_script=args.include_script,
-                    video_file=args.video_file,
+                    video_file=video_file,
+                    drive_service=drive_service,
+                    drive_folder_id=args.drive_folder_id,
                 )
+                if uploaded_welcome_url and "welcome_url" in fieldnames:
+                    row["welcome_url"] = uploaded_welcome_url
+                if args.send_slack:
+                    if not welcome_url:
+                        if uploaded_welcome_url:
+                            welcome_url = uploaded_welcome_url
+                        else:
+                            print(f"Skipping Slack DM for {name}: missing welcome_url", file=sys.stderr)
+                            continue
+                    if not welcome_url:
+                        continue
+                    user_id = slack_lookup_user_id(slack_token, slack_email)
+                    if not user_id:
+                        print(f"Skipping Slack DM for {name}: user not found for {slack_email}", file=sys.stderr)
+                        continue
+                    channel_id = slack_open_dm(slack_token, user_id)
+                    if not channel_id:
+                        print(f"Skipping Slack DM for {name}: cannot open DM channel", file=sys.stderr)
+                        continue
+                    message = (
+                        f"Hi {name}! Welcome to Tokamak Network. "
+                        f"Here is your onboarding package: {welcome_url}"
+                    )
+                    if not slack_send_dm(slack_token, channel_id, message):
+                        print(f"Failed to send Slack DM to {name} ({slack_email})", file=sys.stderr)
+        if drive_service and fieldnames and "welcome_url" in fieldnames:
+            with open(args.csv, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(rows)
         return 0
 
     while True:
@@ -450,6 +629,8 @@ def main() -> int:
             managing_director=args.managing_director,
             include_script=args.include_script,
             video_file=args.video_file,
+            drive_service=drive_service,
+            drive_folder_id=args.drive_folder_id,
         )
 
         if not args.live and args.name and args.team and args.start_date and (args.video_url or args.video_file):

@@ -1,0 +1,6 @@
+name,team,start_date,account_email,account_password,video_url,welcome_url,slack_email
+Alex Lee,Dev,2026-02-10,alex@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,,alex@tokamak.network
+Irene Bae1,DEV,2026-02-10,irene@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,,irene@tokamak.network
+Irene Bae2,DEV,2026-02-15,irene@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,https://drive.google.com/file/d/1WREAFcqh0jPPmSO_mov48CNQCmsCLI94/view?usp=drive_link,irene@tokamak.network
+Jane Lee,Dev,2026-10-15,jane@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,,
+Suzan Lee,Dev,2026-02-20,suzan@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,https://drive.google.com/file/d/15bOE71mNBwvtJeM7MAGcJhPZ2X-RY5XV/view?usp=sharing,

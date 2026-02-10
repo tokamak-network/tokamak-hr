@@ -1,2 +1,2 @@
-name,team,start_date,account_email,account_password,video_url
-Alex Kim,Platform,2026-02-10,alex@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4
+name,team,start_date,account_email,account_password,video_url,slack_email,welcome_url
+Alex Kim,Platform,2026-02-10,alex@tokamak.network,12345,Tokamak Network Onboarding Welcome_1080p_caption.mp4,alex@tokamak.network,https://example.com/welcome_Alex_Kim.html
