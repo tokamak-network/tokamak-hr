@@ -6,6 +6,9 @@ Aryan logged 191 records, concentrated in drive (117), github (38). GitHub contr
 ## Current Work Focus
 Recent GitHub work centers on DRB-node and tokamak-launchpad, with changes such as Merge pull request #84 from tokamak-network/fix/regular-test-cases fix: regular node and database u…; feat: add block time for nodes monitoring. Slack activity is concentrated in project-drb and tokamak-dev, indicating active coordination in those threads. Meeting analysis mentions Aryan in sessions like DRB: PR review assignment (Suhyeon, Aryan, Mehdi, Sahil, Nam) – 2026/02/02 13:38 GMT+05:30 – Notes by Gemini…; DRB: PR review assignment (Suhyeon, Aryan, Mehdi, Sahil, Nam) – 2026/02/02 13:38 GMT+05:30 – Notes by Gemini….
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 19 commits, 5 PRs, and 14 reviews across 2 repo(s) (e.g., DRB-node, tokamak-launchpad), totaling ~9147 additions and ~2401 deletions. The GitHub-only capability signal suggests: Advanced, driven by multi-repo delivery, PR ownership, review participation. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 191
 

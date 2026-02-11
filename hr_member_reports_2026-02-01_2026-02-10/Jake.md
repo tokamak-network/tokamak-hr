@@ -6,6 +6,9 @@ Jake logged 351 records, concentrated in drive (145), notion (90). GitHub contri
 ## Current Work Focus
 Recent GitHub work centers on Tokamak-zk-EVM and Ooo-report-generator, with changes such as Add admin unregister UI and tighten agent write auth; Update circuit visualizer. Slack activity is concentrated in project-ooo and tokamak-dev, indicating active coordination in those threads. Meeting analysis lists Jake as a top speaker, pointing to active meeting involvement.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 58 commits, 4 PRs, and 0 reviews across 3 repo(s) (e.g., 24-7-playground, Ooo-report-generator), totaling ~61850 additions and ~14753 deletions. The GitHub-only capability signal suggests: Advanced, driven by multi-repo delivery, PR ownership, high change volume. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 351
 

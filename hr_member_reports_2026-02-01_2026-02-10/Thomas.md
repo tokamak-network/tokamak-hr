@@ -6,6 +6,9 @@ Thomas logged 453 records, concentrated in notion (211), github (162). GitHub co
 ## Current Work Focus
 Recent GitHub work centers on tokamak-dao-v2 and dao-action-builder, with changes such as feat: add staker lookup UI with filter, results table, and CSV export - StakerFilter: date range pi…; feat: add staker lookup API with GraphQL queries and mock data - Types: StakerFilter, StakerResult,…. Slack activity is concentrated in project-eco and track-b-demo, indicating active coordination in those threads. Meeting analysis lists Thomas as a top speaker, pointing to active meeting involvement.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 162 commits, 0 PRs, and 0 reviews across 5 repo(s) (e.g., dao-action-builder, tokamak-agent-teams), totaling ~353887 additions and ~31222 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume, steady commit cadence. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 453
 

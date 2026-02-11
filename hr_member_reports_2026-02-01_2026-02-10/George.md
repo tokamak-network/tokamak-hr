@@ -6,6 +6,9 @@ George logged 71 records, concentrated in github (35), slack (28). GitHub contri
 ## Current Work Focus
 Recent GitHub work centers on smart-contract-audit-tool and crossTrade, with changes such as add github ci audit; add demo image for future use/showcase. Slack activity is concentrated in project_trh and tokamak-dev, indicating active coordination in those threads. Meeting analysis mentions George in sessions like ProjectTRH: WeeklyCall_Praveen,Theo,Nam,Victor,Shailendra,Manish,George – 2026/02/05 11:23 GMT+05:30 – Notes…; ProjectTRH: WeeklyCall_Praveen,Theo,Nam,Victor,Shailendra,Manish,George – 2026/02/05 11:23 GMT+05:30 – Notes….
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 33 commits, 2 PRs, and 0 reviews across 4 repo(s) (e.g., crossTrade, smart-contract-audit-tool), totaling ~37131 additions and ~687 deletions. The GitHub-only capability signal suggests: Advanced, driven by multi-repo delivery, PR ownership, high change volume. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 71
 

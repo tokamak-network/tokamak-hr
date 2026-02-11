@@ -6,6 +6,9 @@ Praveen logged 219 records, concentrated in drive (123), notion (62). With 34 Sl
 ## Current Work Focus
 Slack activity is concentrated in project_trh and tokamak-dev, indicating active coordination in those threads. Meeting analysis lists Praveen as a top speaker, pointing to active meeting involvement.
 
+## GitHub Capability Assessment (CSV)
+No GitHub events were found for this member in the CSV, so a capability signal cannot be inferred from this dataset. Consider supplementing with project ownership, review feedback, or delivery outcomes.
+
 
 Records: 219
 

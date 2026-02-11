@@ -6,6 +6,9 @@ Irene logged 790 records, concentrated in drive (761), slack (20). GitHub contri
 ## Current Work Focus
 Recent GitHub work centers on tokamak-hr, with changes such as onboarding edit; new members. Slack activity is concentrated in tokamak-hr-announcements and tokamak-dev, indicating active coordination in those threads. Meeting participation is not explicitly recorded for this member in the meeting dataset.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 9 commits, 0 PRs, and 0 reviews across 1 repo(s) (e.g., tokamak-hr), totaling ~4239 additions and ~300 deletions. The GitHub-only capability signal suggests: Emerging, driven by high change volume. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 790
 

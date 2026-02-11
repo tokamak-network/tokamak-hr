@@ -6,6 +6,9 @@ Suhyeon logged 258 records, concentrated in drive (110), github (94). GitHub con
 ## Current Work Focus
 Recent GitHub work centers on auto-research-press and secure-vote, with changes such as Upscale OG cover image to 2400x1260 for better social media preview quality Co-Authored-By: Claude…; Fix root path OG meta tags for social media sharing ## Problem - https://ar-press.com → No thumbnai…. Slack activity is concentrated in tokamak-dev and project-eco, indicating active coordination in those threads. Meeting analysis mentions Suhyeon in sessions like DRB: PR review assignment (Suhyeon, Aryan, Mehdi, Sahil, Nam) – 2026/02/02 13:38 GMT+05:30 – Notes by Gemini…; DRB: PR review assignment (Suhyeon, Aryan, Mehdi, Sahil, Nam) – 2026/02/02 13:38 GMT+05:30 – Notes by Gemini….
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 94 commits, 0 PRs, and 0 reviews across 3 repo(s) (e.g., Optimal-fraud-proof, auto-research-press), totaling ~365934 additions and ~60508 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume, steady commit cadence. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 258
 

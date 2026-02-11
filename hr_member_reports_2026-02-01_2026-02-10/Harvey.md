@@ -6,6 +6,9 @@ Harvey logged 228 records, concentrated in drive (143), github (69). GitHub cont
 ## Current Work Focus
 Recent GitHub work centers on ton-staking-v2 and tokamak-ai-agent, with changes such as Front Demo Update Use of Tokamak AI Agent; Store ABI JSON for Stepper event matching. Slack activity is concentrated in project-eco and tokamak-dev, indicating active coordination in those threads. Meeting analysis mentions Harvey in sessions like ProjectECO_Discuss about delegate staking_Jason,Zena,Harvey - 2026/02/02 13:59 KST; DAO Demo_Thomas, Kevin, Jason, Zena, Harvey - 2026/02/05 13:58 KST.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 69 commits, 0 PRs, and 0 reviews across 6 repo(s) (e.g., erc8004-test, nftgame-zk-dex), totaling ~131048 additions and ~5158 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume, steady commit cadence. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 228
 

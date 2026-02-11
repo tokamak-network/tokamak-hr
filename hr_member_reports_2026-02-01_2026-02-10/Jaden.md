@@ -6,6 +6,9 @@ Jaden logged 747 records, concentrated in drive (675), github (55). GitHub contr
 ## Current Work Focus
 Recent GitHub work centers on bi-weekly-quarterly-reports and google-meet-analyze, with changes such as Delete reportgenerator/frontend/gitkeep.; Update README.md. Slack activity is concentrated in tokamak-dev and tokamak-cm, indicating active coordination in those threads. Meeting participation is not explicitly recorded for this member in the meeting dataset.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 55 commits, 0 PRs, and 0 reviews across 2 repo(s) (e.g., bi-weekly-quarterly-reports, google-meet-analyze), totaling ~40627 additions and ~14347 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume, steady commit cadence. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 747
 

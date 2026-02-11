@@ -6,6 +6,9 @@ Jeongun Baek logged 92 records, concentrated in slack (74), github (16). GitHub 
 ## Current Work Focus
 Recent GitHub work centers on ai-tokamak and DRB-node, with changes such as Strengthen language matching instructions in system prompt; Use masked links and prevent bare URLs in prompts and Discord formatter. Slack activity is concentrated in tokamak-dev and ai-tokamak-network, indicating active coordination in those threads. Meeting participation is not explicitly recorded for this member in the meeting dataset.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 16 commits, 0 PRs, and 0 reviews across 2 repo(s) (e.g., DRB-node, ai-tokamak), totaling ~35124 additions and ~1382 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 92
 

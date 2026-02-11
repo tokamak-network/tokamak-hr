@@ -6,6 +6,9 @@ Zena logged 287 records, concentrated in github (258), slack (26). GitHub contri
 ## Current Work Focus
 Recent GitHub work centers on ton-staking-v2 and tokamon, with changes such as fix(devnet): fix debug_accountRange returning 0 genesis accounts op-geth's default path-based state…; feat(platform): add multi-tenant DB layer, auth middleware, and tenant/item CRUD APIs Introduce SQL…. Slack activity is concentrated in project-eco and tokamak-dev, indicating active coordination in those threads. Meeting analysis mentions Zena in sessions like ProjectECO_Discuss about delegate staking_Jason,Zena,Harvey - 2026/02/02 13:59 KST; DAO Demo_Thomas, Kevin, Jason, Zena, Harvey - 2026/02/05 13:58 KST.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 258 commits, 0 PRs, and 0 reviews across 6 repo(s) (e.g., TON-total-supply, optimism), totaling ~389802 additions and ~76027 deletions. The GitHub-only capability signal suggests: Proficient, driven by multi-repo delivery, high change volume, steady commit cadence. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 287
 

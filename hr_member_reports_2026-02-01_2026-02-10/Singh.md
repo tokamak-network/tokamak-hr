@@ -6,6 +6,9 @@ Singh logged 129 records, concentrated in drive (69), slack (32). GitHub contrib
 ## Current Work Focus
 Recent GitHub work centers on trh-platform-ui and tokamak-architecht-bot, with changes such as feat: Updated logic for fps integration; feat: Added updates for fps configuration integration. Slack activity is concentrated in project_trh and tokamak-dev, indicating active coordination in those threads. Meeting analysis lists Singh as a top speaker, pointing to active meeting involvement.
 
+## GitHub Capability Assessment (CSV)
+CSV GitHub activity shows 24 commits, 2 PRs, and 2 reviews across 7 repo(s) (e.g., erc-8004-tutorials, tokamak-architecht-bot), totaling ~14163 additions and ~1681 deletions. The GitHub-only capability signal suggests: Advanced, driven by multi-repo delivery, PR ownership, review participation. This is a code-activity view and does not measure design leadership, incident response, or mentorship.
+
 
 Records: 129
 

@@ -6,6 +6,9 @@ Rangga logged 22 records, concentrated in notion (19), slack (2). With 2 Slack m
 ## Current Work Focus
 Slack activity is concentrated in tokamak-cm, indicating active coordination in those threads. Meeting participation is not explicitly recorded for this member in the meeting dataset.
 
+## GitHub Capability Assessment (CSV)
+No GitHub events were found for this member in the CSV, so a capability signal cannot be inferred from this dataset. Consider supplementing with project ownership, review feedback, or delivery outcomes.
+
 
 Records: 22
 
