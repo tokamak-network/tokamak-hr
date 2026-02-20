@@ -141,7 +141,7 @@ DEFAULT_CHECKLIST_TEXT = [
 ]
 
 DEFAULT_ACCOUNT_EMAIL = "alex@tokamak.network"
-DEFAULT_ACCOUNT_PASSWORD = "12345"
+DEFAULT_ACCOUNT_PASSWORD = "hellotokamak"
 
 DEFAULT_OT_SCRIPT = [
     "Hi there, and welcome to Tokamak Network.",

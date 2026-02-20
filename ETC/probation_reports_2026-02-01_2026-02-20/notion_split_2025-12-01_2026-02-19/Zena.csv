@@ -1,0 +1,10 @@
+source,type,member_name,member_email,timestamp,added_count,added_summary,deleted_count,deleted_summary,diff_type,editor_name,modified_count,modified_summary,page_id,page_title,title,last_edited,parent_type
+notion,content_diff,Zena,zena@tokamak.network,2026-02-19T04:08:00.000Z,0,,0,,block,Zena,1,@Suah Kim @Zena Please confirm that it is okay to  → @Anonymous @Zena Please confirm that it is okay to,14dd96a4-00a3-8038-bf5a-e9f314b560ef,Titan Sunset Information (titan sepolia simulation),,,
+notion,page,Zena,zena@tokamak.network,2026-02-19 04:08:00,,,,,,,,,,,Backup Information,2026-02-19 04:11:00,
+notion,content_diff,Zena,zena@tokamak.network,2026-02-11T13:02:00.000Z,10,"Gmail access:; Email: dune.tokamak.network@gmail.com; Password: tokamakhelp#a29; Google Authenticator: 
+; Dune access: ; username: tokamaknetwork; password: help#a29; Conduit access: ; Use Google sign in with dune.tokamak.network@gmail.com; paid on February 20th 2024 → 1 month",0,,block,Zena,0,,304d96a4-00a3-8072-9aed-d05db6820874,Authentication Information (1),,,
+notion,page,Zena,zena@tokamak.network,2026-02-11 13:02:00,,,,,,,,,,,Authentication Information (1),2026-02-11 13:02:00,
+notion,page,Zena,zena@tokamak.network,2026-01-05 01:02:00,,,,,,,,,,,Summary of the discussion of two issues in the white paper,2026-01-06 06:44:00,
+notion,page,Zena,zena@tokamak.network,2025-12-29 02:14:00,,,,,,,,,,,Implementation/Operational Discussion of the Validator Minimum Collateral Calculation,2025-12-29 04:11:00,
+notion,page,Zena,zena@tokamak.network,2025-12-09 06:30:00,,,,,,,,,,,Staking V3 Development,2025-12-09 15:43:00,
+notion,page,Zena,zena@tokamak.network,2025-12-08 07:06:00,,,,,,,,,,,White Paper Questions and Answers,2025-12-22 08:18:00,

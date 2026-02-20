@@ -1,0 +1,25 @@
+Welcome, rrr Lee
+Team: Dev
+Start date: 2026-02-20
+
+1) Onboarding video
+- Tokamak Network Onboarding Welcome_1080p_caption.mp4
+(Duration: 3 minutes)
+
+2) First-week checklist
+- 1) Basic settings: Set up 2FA. Please check [PPT] and proceed it (Google/Slack/Github). Please enable Two-Factor Authentication (2FA) for enhanced account security. If not completed within a week after you onboarded, the account will be suspended.
+- PPT link: https://docs.google.com/presentation/d/1lZ1MjgkiJMm6nD_Ln4auBNyf2zF_44MkdyLlA-E9s1c/edit?slide=id.g25eac3a2538_3_87#slide=id.g25eac3a2538_3_87
+- 2) Set up your profile with pictures on Google & Slack.
+- 3) Personal Information Consent & Verification Submission [Obsidian].
+- Obsidian link: https://share.note.sx/op3a89uv#8riSv3+Tecs2qyZBzdC/kQJNDWZW2LtXK5CBFE0TJAc
+- 4) General Guide book of HR [link].
+- Please review this material to understand the company culture and the minimum rules, and be sure to check it.
+- Guide link: https://docs.google.com/presentation/d/1Jg8I8YWXIr44O5tGgRhXvmI67hhzHom6-yI5zwRCMac/edit?slide=id.g2cf9870a132_1_3#slide=id.g2cf9870a132_1_3
+
+3) Account details
+- Account: rrr@tokamak.network
+- Password: 12345
+
+4) Contacts
+- Managing Director: Jaden (jaden@tokamak.network)
+- HR Manager: Irene (irene@tokamak.network)

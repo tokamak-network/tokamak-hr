@@ -1,0 +1,43 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj
+4 0 obj << /Length 1866 >> stream
+BT
+/F1 12 Tf
+72 720 Td
+72 720 Td (Welcome, rrr Lee) Tj
+72 704 Td (Team: Dev) Tj
+72 688 Td (Start date: 2026-02-20) Tj
+72 672 Td () Tj
+72 656 Td (Onboarding video:) Tj
+72 640 Td (- Tokamak Network Onboarding Welcome_1080p_caption.mp4) Tj
+72 624 Td (- Duration: 3 minutes) Tj
+72 608 Td () Tj
+72 592 Td (Checklist:) Tj
+72 576 Td (- <div class="item-title">? Basic settings: Set up 2FA</div><div class="item-sub">Please check <a href="https://docs.google.com/presentation/d/1lZ1MjgkiJMm6nD_Ln4auBNyf2zF_44MkdyLlA-E9s1c/edit?slide=id.g25eac3a2538_3_87#slide=id.g25eac3a2538_3_87">[PPT]</a> and proceed it (Google/Slack/Github).</div><div class="item-sub">Please enable Two-Factor Authentication (2FA) for enhanced account security. If not completed within a week after you onboarded, the account will be suspended.</div>) Tj
+72 560 Td (- <div class="item-title">? Set up your profile with pictures</div><div class="item-sub">Please update your profile on Google and Slack.</div>) Tj
+72 544 Td (- <div class="item-title">? Personal Information Consent & Verification Submission</div><div class="item-sub">Check <a href="https://share.note.sx/op3a89uv#8riSv3+Tecs2qyZBzdC/kQJNDWZW2LtXK5CBFE0TJAc">[Obsidian]</a> and submit.</div>) Tj
+72 528 Td (- <div class="item-title">? General Guide book of HR</div><div class="item-sub">Please review this material to understand the company culture and the minimum rules, and be sure to check it. <a href="https://docs.google.com/presentation/d/1Jg8I8YWXIr44O5tGgRhXvmI67hhzHom6-yI5zwRCMac/edit?slide=id.g2cf9870a132_1_3#slide=id.g2cf9870a132_1_3">[link]</a></div>) Tj
+72 512 Td () Tj
+72 496 Td (Account details:) Tj
+72 480 Td (- Account: rrr@tokamak.network) Tj
+72 464 Td (- Password: 12345) Tj
+72 448 Td () Tj
+72 432 Td (Managing Director: Jaden (jaden@tokamak.network)) Tj
+72 416 Td (HR Manager: Irene (irene@tokamak.network)) Tj
+ET
+endstream endobj
+5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000002159 00000 n 
+trailer << /Size 6 /Root 1 0 R >>
+startxref
+2229
+%%EOF
