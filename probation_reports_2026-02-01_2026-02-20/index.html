@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Probation Completion Reports (2026-02-01 to 2026-02-20)</title>
+<title>Personal Reports Card</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=Space+Grotesk:wght@400;500;600&display=swap');
 :root{
@@ -14,6 +14,8 @@
   --accent-2: #00798c;
   --card: #fff8f0;
   --shadow: 0 10px 30px rgba(0,0,0,.08);
+  --chart: #f0c987;
+  --chart-2:#9fd3c7;
 }
 *{box-sizing:border-box}
 body{margin:0;background:linear-gradient(135deg,#f6f1ea 0%,#f1efe6 40%,#e8f1f2 100%);color:var(--ink);font-family:'Space Grotesk',sans-serif;}
@@ -37,16 +39,58 @@ input[type=search]{padding:12px 14px;border:1px solid #e3d6c7;border-radius:10px
 .details{margin-top:20px;background:#fff;border:1px solid #eaded2;border-radius:18px;padding:20px;box-shadow:var(--shadow);display:none;}
 .details.active{display:block;animation:fade .25s ease;}
 .details h2{font-family:'Fraunces',serif;margin-top:0;}
-hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
+.section{background:#fff;border:1px solid #eaded2;border-radius:18px;padding:20px;box-shadow:var(--shadow);margin:20px 0;}
+.section h2{font-family:'Fraunces',serif;margin:0 0 12px;}
+.chart{display:flex;flex-direction:column;gap:8px;}
+.bar{display:grid;grid-template-columns:160px 1fr 64px;align-items:center;gap:10px;}
+/* metrics removed */
+.metrics{display:none;}
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+/* metric removed */
+.metric{display:none;}
+  display:grid;
+  grid-template-columns:80px 1fr 64px;
+  gap:10px;
+  align-items:center;
+}
+/* metric label removed */
+.metric .label{
+  font-size:12px;
+  color:var(--muted);
+}
+/* metric value removed */
+.metric .value{
+  font-size:12px;
+  color:var(--muted);
+  text-align:right;
+}
+/* fill.add removed */
+.fill.add{
+  background:linear-gradient(90deg,#f7b267,#f79d65);
+}
+/* fill.del removed */
+.fill.del{
+  background:linear-gradient(90deg,#ef476f,#d62839);
+}
+
+.bar .name{font-weight:600;font-size:13px;}
+.bar .track{height:10px;background:#f2e6d8;border-radius:999px;overflow:hidden;}
+.bar .fill{height:100%;background:linear-gradient(90deg,var(--chart),var(--chart-2));}
+.bar .value{font-size:12px;color:var(--muted);text-align:right;}
 @keyframes fade{from{opacity:.6;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 @media (max-width:640px){
   header h1{font-size:30px;}
+  .bar{grid-template-columns:1fr;}
+  .bar .value{text-align:left;}
 }
 </style>
 </head>
 <body>
 <header>
-  <h1>Probation Completion Reports</h1>
+  <h1>Personal Reports Card</h1>
   <p>Period: 2026-02-01 to 2026-02-20 • Data priority: GitHub → Slack → Meetings → Notion → Drive</p>
   <div class="controls">
     <input id="search" type="search" placeholder="Search by name or keyword…" />
@@ -55,21 +99,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
   </div>
 </header>
 <div class="container">
+  
   <section class="grid" id="grid">
-    <article class="card" data-name="aamir muhammad" data-text="aamir muhammad insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Aamir Muhammad</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-0">View Details</button>
-        <button class="btn alt" data-target="detail-0">Toggle</button>
-      </div>
-    </article>
     <article class="card" data-name="aamir" data-text="aamir delivered engineering changes focused on “feat: favicon implemented,” indicating direct execution on core product work. primary impact centers on tokamak-network-pilot, suggesting ownership of key implementation areas. coordination in tokamak-x-medium-announcement, ai-tokamak-network supports cross-team alignment and delivery. documentation updates on what is ethereum? demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: tokamak-network-pilot, tokamak-thumbnail-generator. • pr outcomes: fix: prevent array oob in resume() and make leader selection, feat: implement github rag ingestion pipeline and qdrant vector db.">
       <h2>Aamir</h2>
       <div class="badges">
@@ -80,36 +111,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat: favicon implemented,” indicating direct execution on core product work. Primary impact centers on tokamak-network-pilot, suggesting…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: tokamak-network-pilot, tokamak-thumbnail-generator. • PR outcomes: fix: Prevent array OOB in resume() and make leader selection, feat: implement GitHub RAG ingestio…</div>
       <div class="actions">
-        <button class="btn" data-target="detail-1">View Details</button>
-        <button class="btn alt" data-target="detail-1">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="ale son" data-text="ale son insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Ale Son</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-2">View Details</button>
-        <button class="btn alt" data-target="detail-2">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="harvey jo" data-text="harvey jo insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Harvey Jo</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-3">View Details</button>
-        <button class="btn alt" data-target="detail-3">Toggle</button>
+        <button class="btn" data-target="detail-0">View Details</button>
+        <button class="btn alt" data-target="detail-0">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="harvey" data-text="harvey delivered engineering changes focused on “add export and import added export and import functions to allow nfts to be loaded from other browsers.,” indicating direct execution on core product work. primary impact centers on ton-staking-v2, suggesting ownership of key implementation areas. coordination in project-eco, tokamak-dev supports cross-team alignment and delivery. drive activity suggests operational support via frequent “search” actions. primary repos: ton-staking-v2, tokamak-ai-agent. • pr outcomes: no prs recorded in this period.">
@@ -122,8 +125,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “Add Export And Import Added export and import functions to allow NFTs to be loaded from other browsers.,” indicating direct execution on…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: ton-staking-v2, tokamak-ai-agent. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-4">View Details</button>
-        <button class="btn alt" data-target="detail-4">Toggle</button>
+        <button class="btn" data-target="detail-1">View Details</button>
+        <button class="btn alt" data-target="detail-1">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="irene" data-text="irene delivered engineering changes focused on “etc,” indicating direct execution on core product work. primary impact centers on tokamak-hr, suggesting ownership of key implementation areas. coordination in tokamak-hr-announcements, tokamak-dev supports cross-team alignment and delivery. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: tokamak-hr. • pr outcomes: no prs recorded in this period.">
@@ -136,8 +139,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “etc,” indicating direct execution on core product work. Primary impact centers on tokamak-hr, suggesting ownership of key implementation…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: tokamak-hr. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-5">View Details</button>
-        <button class="btn alt" data-target="detail-5">Toggle</button>
+        <button class="btn" data-target="detail-2">View Details</button>
+        <button class="btn alt" data-target="detail-2">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="jaden" data-text="jaden delivered engineering changes focused on “fix: improve visual report with contributor counts and dynamic period labels - fix contributor count showing 0 by using…,” indicating direct execution on core product work. primary impact centers on bi-weekly-quarterly-reports, suggesting ownership of key implementation areas. coordination in tokamak-dev, tokamak-cm supports cross-team alignment and delivery. documentation updates on 2026.02.05 정기 회의 demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: bi-weekly-quarterly-reports, google-meet-analyze. • pr outcomes: feat: ai-powered report review system with history, fix: update model options and add dynamic model fetching.">
@@ -150,22 +153,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “fix: improve visual report with contributor counts and dynamic period labels - Fix contributor count showing 0 by using…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: bi-weekly-quarterly-reports, google-meet-analyze. • PR outcomes: feat: AI-powered report review system with history, fix: update model options and add dynamic model…</div>
       <div class="actions">
-        <button class="btn" data-target="detail-6">View Details</button>
-        <button class="btn alt" data-target="detail-6">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="jake jang" data-text="jake jang insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Jake Jang</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-7">View Details</button>
-        <button class="btn alt" data-target="detail-7">Toggle</button>
+        <button class="btn" data-target="detail-3">View Details</button>
+        <button class="btn alt" data-target="detail-3">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="jake" data-text="jake delivered engineering changes focused on “normalize new blog article imports and frontmatter metadata,” indicating direct execution on core product work. primary impact centers on 24-7-playground, suggesting ownership of key implementation areas. coordination in project-ooo, tokamak-dev supports cross-team alignment and delivery. documentation updates on tokamak zkevm bridge: channel lifecycle technical specification demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: 24-7-playground, tokamak-zk-evm. • pr outcomes: refactor public commitment split across setup/prove/preprocess/verify, tokamak zk-evm verifier solidity gas optimization.">
@@ -178,22 +167,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “Normalize new blog article imports and frontmatter metadata,” indicating direct execution on core product work. Primary impact centers on…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: 24-7-playground, Tokamak-zk-EVM. • PR outcomes: Refactor public commitment split across setup/prove/preprocess/verify, Tokamak zk-EVM verifier solidity gas optimiza…</div>
       <div class="actions">
-        <button class="btn" data-target="detail-8">View Details</button>
-        <button class="btn alt" data-target="detail-8">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="jason hwang" data-text="jason hwang insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Jason Hwang</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-9">View Details</button>
-        <button class="btn alt" data-target="detail-9">Toggle</button>
+        <button class="btn" data-target="detail-4">View Details</button>
+        <button class="btn alt" data-target="detail-4">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="jason" data-text="jason delivered engineering changes focused on “feat: finalize migration tool with converter and fetcher updates,” indicating direct execution on core product work. primary impact centers on delegate-staking-mvp, suggesting ownership of key implementation areas. coordination in tokamak-dev, project-eco supports cross-team alignment and delivery. documentation updates on eco_january report demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: delegate-staking-mvp, eth-rpg. • pr outcomes: no prs recorded in this period.">
@@ -206,36 +181,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat: finalize migration tool with converter and fetcher updates,” indicating direct execution on core product work. Primary impact cente…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: delegate-staking-mvp, ETH-RPG. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-10">View Details</button>
-        <button class="btn alt" data-target="detail-10">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="jeongun baek" data-text="jeongun baek delivered engineering changes focused on “feat: prompt improvements for token optimization and clarity - system_prompt: restructured with 5-step process table, l…,” indicating direct execution on core product work. primary impact centers on tokamak-learning, suggesting ownership of key implementation areas. coordination in tokamak-dev, ai-tokamak-network supports cross-team alignment and delivery. drive activity suggests operational support via frequent “sync_item_content” actions. primary repos: tokamak-learning, zk-mafia. • pr outcomes: no prs recorded in this period.">
-      <h2>Jeongun Baek</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        <span class="badge stat">github: 137</span><span class="badge stat">slack: 37</span><span class="badge stat">drive: 13</span>
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat: prompt improvements for token optimization and clarity - SYSTEM_PROMPT: Restructured with 5-step process table, l…,” indicating dir…</div>
-      <div class="snip"><strong>GitHub highlights:</strong> Primary repos: tokamak-learning, zk-mafia. • PR outcomes: no PRs recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-11">View Details</button>
-        <button class="btn alt" data-target="detail-11">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="kevin jeong" data-text="kevin jeong insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Kevin Jeong</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-12">View Details</button>
-        <button class="btn alt" data-target="detail-12">Toggle</button>
+        <button class="btn" data-target="detail-5">View Details</button>
+        <button class="btn alt" data-target="detail-5">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="kevin" data-text="kevin delivered engineering changes focused on “docs: update loc stats to match current codebase - main.py: 527 → 529 loc (+2 from bootnode additions) - test_rpc.py: 9…,” indicating direct execution on core product work. primary impact centers on py-ethclient, suggesting ownership of key implementation areas. coordination in tokamak-dev, ai-tokamak-network supports cross-team alignment and delivery. drive activity suggests operational support via frequent “search” actions. primary repos: py-ethclient, zkdex-skills. • pr outcomes: no prs recorded in this period.">
@@ -248,22 +195,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “docs: update LOC stats to match current codebase - main.py: 527 → 529 LOC (+2 from bootnode additions) - test_rpc.py: 9…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: py-ethclient, zkdex-skills. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-13">View Details</button>
-        <button class="btn alt" data-target="detail-13">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="mehdi beriane" data-text="mehdi beriane insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Mehdi Beriane</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-14">View Details</button>
-        <button class="btn alt" data-target="detail-14">Toggle</button>
+        <button class="btn" data-target="detail-6">View Details</button>
+        <button class="btn alt" data-target="detail-6">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="mehdi" data-text="mehdi delivered engineering changes focused on “update ek docs with current sepolia contract addresses co-authored-by: claude opus 4.6 <noreply@anthropic.com>,” indicating direct execution on core product work. primary impact centers on tokamak-ai-layer, suggesting ownership of key implementation areas. coordination in tokamak-dev, project-drb supports cross-team alignment and delivery. documentation updates on tokamak zkevm bridge: channel lifecycle technical specification demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “search” actions. primary repos: tokamak-ai-layer, commit-reveal2. • pr outcomes: fix: address critical bugs in websocket reconnection and error handling.">
@@ -276,22 +209,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “update EK docs with current Sepolia contract addresses Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>,” indicating direct execut…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: Tokamak-AI-Layer, Commit-Reveal2. • PR outcomes: fix: address critical bugs in websocket reconnection and error handling.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-15">View Details</button>
-        <button class="btn alt" data-target="detail-15">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="monica kim" data-text="monica kim insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Monica Kim</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-16">View Details</button>
-        <button class="btn alt" data-target="detail-16">Toggle</button>
+        <button class="btn" data-target="detail-7">View Details</button>
+        <button class="btn alt" data-target="detail-7">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="monica" data-text="monica delivered engineering changes focused on “feat: vercel deployment prep + edge case fixes + comprehensive tests - add vercel.json spa routing for client-side navi…,” indicating direct execution on core product work. primary impact centers on zk-dex-d1-private-voting, suggesting ownership of key implementation areas. coordination in project_trh, tokamak-dev supports cross-team alignment and delivery. documentation updates on primary repos: zk-dex-d1-private-voting, sigil-voting. • pr outcomes: no prs recorded in this period.">
@@ -304,22 +223,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat: Vercel deployment prep + edge case fixes + comprehensive tests - Add vercel.json SPA routing for client-side navi…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: zk-dex-d1-private-voting, sigil-voting. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-17">View Details</button>
-        <button class="btn alt" data-target="detail-17">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="sahil wasnik" data-text="sahil wasnik insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Sahil Wasnik</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-18">View Details</button>
-        <button class="btn alt" data-target="detail-18">Toggle</button>
+        <button class="btn" data-target="detail-8">View Details</button>
+        <button class="btn alt" data-target="detail-8">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="sahil" data-text="sahil delivered engineering changes focused on “fix: comprehensive name discovery + reclaim for returning users root cause: registermetaaddress() fails silently during…,” indicating direct execution on core product work. primary impact centers on dust-protocol, suggesting ownership of key implementation areas. coordination in project_trh, tokamak-dev supports cross-team alignment and delivery. documentation updates on trh platform desktop demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: dust-protocol, thanos-bridge. • pr outcomes: no prs recorded in this period.">
@@ -332,22 +237,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “fix: comprehensive name discovery + reclaim for returning users Root cause: registerMetaAddress() fails silently during…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: dust-protocol, thanos-bridge. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-19">View Details</button>
-        <button class="btn alt" data-target="detail-19">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="suhyeon lee" data-text="suhyeon lee insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Suhyeon Lee</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-20">View Details</button>
-        <button class="btn alt" data-target="detail-20">Toggle</button>
+        <button class="btn" data-target="detail-9">View Details</button>
+        <button class="btn alt" data-target="detail-9">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="suhyeon" data-text="suhyeon delivered engineering changes focused on “remove paper/research files from tracking and update gitignore - git rm --cached: papers/, experiments/results/real-dat…,” indicating direct execution on core product work. primary impact centers on auto-research-press, suggesting ownership of key implementation areas. coordination in tokamak-dev, project-eco supports cross-team alignment and delivery. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: auto-research-press, secure-vote. • pr outcomes: no prs recorded in this period.">
@@ -360,22 +251,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “Remove paper/research files from tracking and update gitignore - git rm --cached: papers/, experiments/results/real-dat…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: auto-research-press, secure-vote. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-21">View Details</button>
-        <button class="btn alt" data-target="detail-21">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="theo lee" data-text="theo lee insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Theo Lee</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-22">View Details</button>
-        <button class="btn alt" data-target="detail-22">Toggle</button>
+        <button class="btn" data-target="detail-10">View Details</button>
+        <button class="btn alt" data-target="detail-10">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="theo" data-text="theo delivered engineering changes focused on “fix(rpc,sync): improve exception handling in jwt validation and rlp decoding addressed gemini code review feedback on o…,” indicating direct execution on core product work. primary impact centers on sentinai, suggesting ownership of key implementation areas. coordination in project_trh, tokamak-dev supports cross-team alignment and delivery. documentation updates on trh platform: backup & recovery guide demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: sentinai, trh-platform-ui. • pr outcomes: feat: implement engine api v3 flow and stabilize sepolia sync, fix: improve monitoring integration for mainnet support.">
@@ -388,22 +265,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “fix(rpc,sync): improve exception handling in JWT validation and RLP decoding Addressed Gemini code review feedback on o…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: SentinAI, trh-platform-ui. • PR outcomes: feat: implement engine API v3 flow and stabilize Sepolia sync, fix: improve monitoring integration for mainnet support.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-23">View Details</button>
-        <button class="btn alt" data-target="detail-23">Toggle</button>
-      </div>
-    </article>
-    <article class="card" data-name="thomas shin" data-text="thomas shin insufficient cross-source evidence to infer a dominant work focus in this period. no github activity recorded in this period.">
-      <h2>Thomas Shin</h2>
-      <div class="badges">
-        <span class="badge">GitHub-first</span>
-        <span class="badge">Probation Report</span>
-        
-      </div>
-      <div class="snip"><strong>Work focus:</strong> Insufficient cross-source evidence to infer a dominant work focus in this period.</div>
-      <div class="snip"><strong>GitHub highlights:</strong> No GitHub activity recorded in this period.</div>
-      <div class="actions">
-        <button class="btn" data-target="detail-24">View Details</button>
-        <button class="btn alt" data-target="detail-24">Toggle</button>
+        <button class="btn" data-target="detail-11">View Details</button>
+        <button class="btn alt" data-target="detail-11">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="thomas" data-text="thomas delivered engineering changes focused on “feat(web): add agent credibility scoring system track qoc lens predictions vs actual on-chain outcomes with weighted sc…,” indicating direct execution on core product work. primary impact centers on tokamak-dao-agent, suggesting ownership of key implementation areas. coordination in project-eco, track-b-demo supports cross-team alignment and delivery. documentation updates on tokamak dao agent demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “접근 권한 변경” actions. primary repos: tokamak-dao-agent, tokamak-dao-v2. • pr outcomes: no prs recorded in this period.">
@@ -416,8 +279,8 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat(web): add agent credibility scoring system Track QOC lens predictions vs actual on-chain outcomes with weighted sc…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: tokamak-dao-agent, tokamak-dao-v2. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-25">View Details</button>
-        <button class="btn alt" data-target="detail-25">Toggle</button>
+        <button class="btn" data-target="detail-12">View Details</button>
+        <button class="btn alt" data-target="detail-12">Toggle</button>
       </div>
     </article>
     <article class="card" data-name="zena" data-text="zena delivered engineering changes focused on “feat: refactor faucet to server api, update app for thanos-sepolia, and improve ui - client: replace contract-based fau…,” indicating direct execution on core product work. primary impact centers on ton-staking-v2, suggesting ownership of key implementation areas. coordination in project-eco, tokamak-dev supports cross-team alignment and delivery. documentation updates on authentication information (1) demonstrate knowledge transfer and onboarding support. drive activity suggests operational support via frequent “search” actions. primary repos: ton-staking-v2, tokamon. • pr outcomes: no prs recorded in this period.">
@@ -430,34 +293,13 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
       <div class="snip"><strong>Work focus:</strong> Delivered engineering changes focused on “feat: refactor faucet to server API, update app for thanos-sepolia, and improve UI - Client: replace contract-based fau…,” indicating dir…</div>
       <div class="snip"><strong>GitHub highlights:</strong> Primary repos: ton-staking-v2, tokamon. • PR outcomes: no PRs recorded in this period.</div>
       <div class="actions">
-        <button class="btn" data-target="detail-26">View Details</button>
-        <button class="btn alt" data-target="detail-26">Toggle</button>
+        <button class="btn" data-target="detail-13">View Details</button>
+        <button class="btn alt" data-target="detail-13">Toggle</button>
       </div>
     </article>
   </section>
   <section id="details">
     <div class="details" id="detail-0">
-      <h2>Probation Completion Report - Aamir Muhammad</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 3</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-1">
       <h2>Probation Completion Report - Aamir</h2>
 <h3>Period</h3>
 <ul>
@@ -574,49 +416,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 12:25:37.883000 | slack | message |  | tokamak-x-medium-announcement |</p>
 <p>| 2026-02-02 11:29:11.215000 | slack | message |  | tokamak-x-medium-announcement |</p>
     </div>
-    <div class="details" id="detail-2">
-      <h2>Probation Completion Report - Ale Son</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 2</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-3">
-      <h2>Probation Completion Report - Harvey Jo</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 5</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-4">
+    <div class="details" id="detail-1">
       <h2>Probation Completion Report - Harvey</h2>
 <h3>Period</h3>
 <ul>
@@ -783,7 +583,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 09:03:39 | github | commit |  | Challenger E2E test Implementing slashing integration tests in an optimistic environment. |</p>
 <p>| 2026-02-01 06:26:47 | github | commit |  | DisputeGame Challenger Reward Update According to the Winning Challenger Tracking implementation document, the rewards given to challengers… |</p>
     </div>
-    <div class="details" id="detail-5">
+    <div class="details" id="detail-2">
       <h2>Probation Completion Report - Irene</h2>
 <h3>Period</h3>
 <ul>
@@ -855,7 +655,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 09:52:36.264000 | slack | message |  | tokamak-hr-announcements |</p>
 <p>| 2026-02-02 09:12:21.835000 | slack | message |  | tokamak-dev |</p>
     </div>
-    <div class="details" id="detail-6">
+    <div class="details" id="detail-3">
       <h2>Probation Completion Report - Jaden</h2>
 <h3>Period</h3>
 <ul>
@@ -1019,28 +819,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 08:39:18.406000 | slack | message |  | tokamak-dev |</p>
 <p>| 2026-02-02 08:34:36.015000 | slack | message |  | tokamak-dev |</p>
     </div>
-    <div class="details" id="detail-7">
-      <h2>Probation Completion Report - Jake Jang</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 2</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-8">
+    <div class="details" id="detail-4">
       <h2>Probation Completion Report - Jake</h2>
 <h3>Period</h3>
 <ul>
@@ -1425,28 +1204,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 07:48:09.879000 | slack | message |  | project-ooo |</p>
 <p>| 2026-02-01 07:47:11.385000 | slack | message |  | project-ooo |</p>
     </div>
-    <div class="details" id="detail-9">
-      <h2>Probation Completion Report - Jason Hwang</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 4</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-10">
+    <div class="details" id="detail-5">
       <h2>Probation Completion Report - Jason</h2>
 <h3>Period</h3>
 <ul>
@@ -1721,245 +1479,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 01:11:43 | github | commit |  | docs: Add AI development environment setup guide v1.6.0 - Bilingual documentation (Korean/English) - IDE setup: VS Code, Cursor, Antigravit… |</p>
 <p>| 2026-02-01 15:12:39 | github | commit |  | Initial commit: Delegate Staking MVP for Tokamak Network V3 Features: - Smart contract: DelegateStakingMVP.sol with stake/unstake/withdraw… |</p>
     </div>
-    <div class="details" id="detail-11">
-      <h2>Probation Completion Report - Jeongun Baek</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>github: 137</li>
-<li>slack: 37</li>
-<li>drive: 13</li>
-<li>gemini: 1</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h4>GitHub (primary evidence)</h4>
-<ul>
-<li>Repositories: tokamak-learning, zk-mafia, ai-tokamak</li>
-<li>Notable commits: feat: prompt improvements for token optimization and clarity - SYSTEM_PROMPT: Restructured with 5-step process table, l…</li>
-<li>Recurring themes: add, fix, feat, game, all, co-authored-by</li>
-</ul>
-<h4>Slack</h4>
-<ul>
-<li>Active channels: tokamak-dev, ai-tokamak-network, track-b-demo</li>
-<li>Discussion themes: agent, tokamak, use, https, crate</li>
-</ul>
-<h4>Drive</h4>
-<ul>
-<li>Top actions: sync_item_content</li>
-<li>Files touched: ProjectECO_Weekly call - 2026/01/14 16:53 KST - Gemini가 작성한…, Survey on ZK Proving Market_ ECO & anyone - 2026/01/13 13:5…, StakingV3_Contracts[KR]_Zena,Harvey,Thomas,Jeongun - 2026/0…</li>
-</ul>
-<h3>GitHub Reports</h3>
-<ul>
-<li>Primary repos: tokamak-learning, zk-mafia.</li>
-<li>PR outcomes: no PRs recorded in this period.</li>
-<li>Commit outcomes: feat: prompt improvements for token optimization and clarity - SYSTEM_PROMPT: Restructured with 5-s….</li>
-<li>Delivery themes: add, fix, feat, game.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Delivered engineering changes focused on “feat: prompt improvements for token optimization and clarity - SYSTEM_PROMPT: Restructured with 5-step process table, l…,” indicating direct execution on core product work. Primary impact centers on tokamak-learning, suggesting ownership of key implementation areas. Coordination in tokamak-dev, ai-tokamak-network supports cross-team alignment and delivery. Drive activity suggests operational support via frequent “sync_item_content” actions.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-<p>| 2026-02-19 16:12:29 | github | commit |  | feat: prompt improvements for token optimization and clarity - SYSTEM_PROMPT: Restructured with 5-step process table, linter priority, dedu… |</p>
-<p>| 2026-02-19 15:54:34 | github | commit |  | Fix tests: Add tests/__init__.py and update README - Add tests/__init__.py to fix module import errors - Update README.md with Ethereum com… |</p>
-<p>| 2026-02-19 07:44:56 | github | commit |  | Add SAST tool integration to all language skills Integrate professional SAST tools into each skill: - Go: Gosec, govulncheck, Staticcheck,… |</p>
-<p>| 2026-02-18 19:13:51 | github | commit |  | chore: add report*.md to gitignore Ultraworked with [Sisyphus](https://github.com/code-yeongyu/oh-my-opencode) Co-authored-by: Sisyphus <cl… |</p>
-<p>| 2026-02-18 19:09:03 | github | commit |  | docs: update AGENTS.md with language filtering documentation - Document languages field in frontmatter - Update skill table with language c… |</p>
-<p>| 2026-02-18 19:08:36 | github | commit |  | feat: add language-specific review skills Add comprehensive review skills for Python, Go, TypeScript, JavaScript, Solidity: - Debug code de… |</p>
-<p>| 2026-02-18 19:07:41 | github | commit |  | feat: add language filtering to skill system - Add 'languages' field to Skill dataclass for language-specific filtering - Update format_ski… |</p>
-<p>| 2026-02-18 19:04:39 | github | commit |  | Split test file into separate modules by functionality - Create conftest.py with shared fixtures and constants - Split test_sequencer.py in… |</p>
-<p>| 2026-02-18 18:18:28 | github | commit |  | Add Mempool with nonce validation and block time support Mempool Features: - Priority-based transaction pool with nonce tracking per sender… |</p>
-<p>| 2026-02-18 17:31:52 | github | commit |  | Initial commit: Sheriff code quality review agent with skill system - Core agent with OpenAI tool calling loop (ls, read, bash, grep, find)… |</p>
-<p>| 2026-02-18 16:16:47 | github | commit |  | Implement EIP-1559 transaction support and eth_feeHistory EIP-1559 Features: - Add calc_base_fee() for dynamic base fee calculation - Add c… |</p>
-<p>| 2026-02-18 15:12:46 | github | commit |  | Add development roadmap with Prague/Osaka compatibility plan - Replace simple 'Not Yet Implemented' section with detailed roadmap - Phase 1… |</p>
-<p>| 2026-02-18 11:55:29 | github | commit |  | feat: refactor admin tools to skills-based architecture with web_fetch/web_post separation - Split web.py into WebFetchTool (GET with query… |</p>
-<p>| 2026-02-17 21:43:47 | github | commit |  | added README.md |</p>
-<p>| 2026-02-17 21:14:48 | github | commit |  | commit plan files |</p>
-<p>| 2026-02-17 21:14:48 | github | commit |  | Implement ultra-lightweight Ethereum client |</p>
-<p>| 2026-02-17 21:14:48 | github | commit |  | Add eth_sendRawTransaction, eth_getTransactionReceipt and auto-mine for single sequencer - Implement eth_sendRawTransaction RPC method for… |</p>
-<p>| 2026-02-17 21:14:48 | github | commit |  | Add convenience scripts for running node and sending test transactions |</p>
-<p>| 2026-02-17 16:33:41 | github | commit |  | feat: add GitHub repository search instructions for staking/DAO projects Add guidance for agent to fetch latest info from GitHub repositori… |</p>
-<p>| 2026-02-17 12:47:52 | github | commit |  | Add admin commands system with channel-based authentication - Add admin module with AdminHandler, AdminCommand infrastructure - Implement c… |</p>
-<p>| 2026-02-17 07:34:26 | github | commit |  | refactor: consolidate daily generation logic and remove unused code - Remove local-daily-generator.ts (functionality merged into route) - R… |</p>
-<p>| 2026-02-17 07:30:45 | github | commit |  | feat: add spaced repetition system and local daily challenge generator - Implement SM-2 algorithm for personalized review scheduling - Add… |</p>
-<p>| 2026-02-17 07:21:14 | github | commit |  | Translate documentation to English - RAILWAY_DEPLOY.md: Railway deployment guide - DISCORD_BOT_SETUP.md: Discord bot setup guide |</p>
-<p>| 2026-02-17 07:15:04 | github | commit |  | Add news feed environment variables to Railway deployment - Add NEWS_FEED_ENABLED, NEWS_KOREAN_CHANNEL_ID, NEWS_ENGLISH_CHANNEL_ID - Add NE… |</p>
-<p>| 2026-02-17 07:11:40 | github | commit |  | Add automated crypto news feed with bilingual summaries - Add NewsFetcher for RSS feed collection with retry logic - Add NewsSummarizer for… |</p>
-<p>| 2026-02-16 18:00:08 | github | commit |  | fix: show test summary only on Test button, not Run button |</p>
-<p>| 2026-02-16 16:46:52 | github | commit |  | refactor: extract daily generation logic into testable module - Extract daily question generation helpers into daily-generate.ts - Add comp… |</p>
-<p>| 2026-02-15 16:32:52 | github | commit |  | feat: add console.sol import to all problem starter/solution code Ensures every problem includes `import "hardhat/console.sol"` so students… |</p>
-<p>| 2026-02-15 16:30:39 | github | commit |  | feat: add console.log problems and fix next button on Run Add two new basics problems (hello-console, log-types) teaching console.log usage… |</p>
-<p>| 2026-02-15 15:59:24 | github | commit |  | fix: use theme variables for daily challenge code highlight readability Replace hardcoded dark-mode colors with CSS variables so text is vi… |</p>
-<p>| 2026-02-15 15:57:04 | github | commit |  | feat: add Run command with console.log support, rename Run Tests to Test - Add "Run" button (⌘Enter) that compiles, deploys, and captures c… |</p>
-<p>| 2026-02-14 05:33:21 | github | commit |  | Fix start command: use python -m tokamak instead of CLI entry point Nixpacks doesn't add package entry points to PATH. Co-Authored-By: Clau… |</p>
-<p>| 2026-02-14 05:26:48 | github | commit |  | Remove Procfile to fix Railway env var injection Procfile was being executed during build phase where runtime env vars are not available. r… |</p>
-<p>| 2026-02-14 05:23:56 | github | commit |  | Fix Railway deploy: sync Procfile with railway.toml - Procfile now runs create_config.py before tokamak run - Add env var debug output to c… |</p>
-<p>| 2026-02-14 05:17:21 | github | commit |  | Improve prompts, Discord formatting, and Railway deployment Prompt improvements (P0/P1): - Fix keyword over-matching for intro pattern - Un… |</p>
-<p>| 2026-02-13 20:50:11 | github | commit |  | fix: resize footer logo to match text proportion Reduce from 44px to 20px (w-5 h-5) to align with the adjacent text-sm "Tokamak Network" la… |</p>
-<p>| 2026-02-13 20:49:17 | github | commit |  | fix: remove light mode brightness filter from footer logo Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 20:48:06 | github | commit |  | fix: resolve hydration mismatch in footer, header, and theme provider Server/client mismatch caused by localStorage/DOM reads during initia… |</p>
-<p>| 2026-02-13 20:46:41 | github | commit |  | Optimize prompt costs: dynamic pattern injection and caching - Slim Korean review prompt from ~55 lines to 7 lines - Extract answer pattern… |</p>
-<p>| 2026-02-13 20:44:20 | github | commit |  | improve: accessibility, lint cleanup, and theming polish - Add ARIA labels, roles, aria-current, aria-live, and sr-only text across Header,… |</p>
-<p>| 2026-02-13 20:37:41 | github | commit |  | Improve stability: concurrency control, error handling, prompt fixes - Add per-user asyncio.Lock to prevent concurrent message processing -… |</p>
-<p>| 2026-02-13 20:37:39 | github | commit |  | improve: global reduced-motion support and smoother VIM toggle - Wrap app in MotionConfig reducedMotion="user" and LazyMotion for automatic… |</p>
-<p>| 2026-02-13 20:36:08 | github | commit |  | improve: add build-time data validation and PlasmaCanvas performance - Add validation script that checks problem data integrity and daily c… |</p>
-<p>| 2026-02-13 20:34:30 | github | commit |  | Fix critical production issues: SSRF, message splitting, memory leaks, injection protection - Add SSRF protection to WebFetchTool: block pr… |</p>
-<p>| 2026-02-13 20:31:42 | github | commit |  | improve: UX polish - image optimization, accessibility, and light mode fixes - Remove unoptimized flag from images for Next.js optimization… |</p>
-<p>| 2026-02-13 20:21:14 | github | commit |  | fix: production readiness - security hardening, SEO, accessibility, and data integrity Security: - Add 50KB input size limit to compile API… |</p>
-<p>| 2026-02-13 19:54:37 | github | commit |  | fix: use fixed dark background for code blocks across themes Code block now uses hardcoded dark colors (#0f1520 bg, #e2e8f0 text, #94a3b8 m… |</p>
-<p>| 2026-02-13 19:42:28 | github | commit |  | fix: improve mobile code readability with line-focus rendering Parse code into individual lines and spotlight the blank line with accent hi… |</p>
-<p>| 2026-02-13 19:38:40 | github | commit |  | feat: add mobile daily challenge with Duolingo-style fill-in-the-blank quiz - Add 30 Solidity/Ethereum questions (3 rotating sets of 10) wi… |</p>
-<p>| 2026-02-13 18:57:44 | github | commit |  | update: replace default favicon with project logo Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 18:48:39 | github | commit |  | update: revise hero subtitle to emphasize learning through repetition Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 18:40:18 | github | commit |  | fix: replace V/X text with SVG icons and unify hardcoded colors to CSS variables Use proper checkmark/cross SVG icons for test results inst… |</p>
-<p>| 2026-02-13 18:31:45 | github | commit |  | feat: replace hero logo with plasma canvas particle animation Canvas-based particle effect where 60 particles spiral inward toward the cent… |</p>
-<p>| 2026-02-13 18:16:53 | github | commit |  | feat: replace hero main.png with floating logo animation Swap static main.png for logo.png with a framer-motion float animation (3s ease-in… |</p>
-<p>| 2026-02-13 17:56:09 | github | commit |  | feat: revamp patterns category with 6 problems (Type A/B/C mix) Expanded from 2 to 6 problems with proper difficulty progression: 1. Simple… |</p>
-<p>| 2026-02-13 17:52:06 | github | commit |  | revamp: redesign advanced category with proper progression and full topic coverage - Expand from 3 to 8 problems covering all key advanced… |</p>
-<p>| 2026-02-13 17:51:05 | github | commit |  | refactor: revamp patterns category with better descriptions and hints - Add "## What you'll learn" to all descriptions - Pre-declare event… |</p>
-<p>| 2026-02-13 17:49:39 | github | commit |  | revamp: redesign data-structures category with proper progression and granularity - Expand from 3 to 7 problems for proper concept-per-prob… |</p>
-<p>| 2026-02-13 17:49:23 | github | commit |  | refactor: revamp advanced category for one-concept-per-problem - Simplify events from 2 events + indexed + calldata to 1 event + emit - Sim… |</p>
-<p>| 2026-02-13 17:48:09 | github | commit |  | refactor: revamp control-flow category for focused learning - Replace overloaded function-modifier (modifier + require + _ + apply) with fo… |</p>
-<p>| 2026-02-13 17:47:25 | github | commit |  | revamp: redesign gotchas category with proper progression and error experience - Restructure 8 problems focused on Solidity-specific surpri… |</p>
-<p>| 2026-02-13 17:45:41 | github | commit |  | refactor: revamp variables category for focused concept teaching - Simplify local-variables to a single getDouble function (was sum+product… |</p>
-<p>| 2026-02-13 17:44:39 | github | commit |  | revamp: redesign comparison category with proper progression and error experience - Expand from 5 to 7 problems with clear Buildup/Contrast… |</p>
-<p>| 2026-02-13 17:43:42 | github | commit |  | refactor: revamp basic-types category for one-concept-per-problem - Split overloaded bool problem into "Declare a Bool" + "Toggle a Bool" -… |</p>
-<p>| 2026-02-13 17:41:03 | github | commit |  | revamp: redesign integers category with proper progression and error experience - Restructure 8 problems with Buildup/Contrast/Error-Fix pa… |</p>
-<p>| 2026-02-13 17:39:28 | github | commit |  | refactor: revamp basics category problems for better pedagogy - Add "## What you'll learn" section to all descriptions - Fix hints to point… |</p>
-<p>| 2026-02-13 17:28:40 | github | commit |  | chore: add clean script, ShortcutHelp component, translate metadata to English Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 17:28:00 | github | commit |  | fix: resolve 10 codebase issues across bugs, UX, security, and code quality - Remove duplicate Test button, unify into single "Run Tests" b… |</p>
-<p>| 2026-02-13 11:52:41 | github | commit |  | feat: redesign UI with plasma-themed look & feel - New color palette with deeper space-dark tones and cyan accent - Glassmorphism header wi… |</p>
-<p>| 2026-02-13 11:45:13 | github | commit |  | feat: remove logo background, uniform category cards, and adjust header logo size Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 11:39:01 | github | commit |  | feat: redesign editor action buttons with icons, colors, and dedicated row Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 11:35:12 | github | commit |  | feat: update header logo with absolute positioning and branding Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 11:24:56 | github | commit |  | feat: translate all Korean text to English across the codebase All user-facing and internal text has been translated from Korean to English… |</p>
-<p>| 2026-02-13 10:42:42 | github | commit |  | feat: add light/dark theme toggle support Add ThemeProvider with localStorage persistence, light theme CSS variables, and theme-aware Monac… |</p>
-<p>| 2026-02-13 10:26:01 | github | commit |  | feat: basics 카테고리 문제 개선 및 확장 (6개→10개) - 새 문제 추가: contract-rename, first-variable, string-variable, type-error-fix - 점진적 학습 흐름으로 재구성 (한 문제=한… |</p>
-<p>| 2026-02-13 08:12:20 | github | commit |  | feat: add progress tracking, VIM mode, shortcuts, and contract name validation - Rename Toka Learn to Tokamak Learning across header and me… |</p>
-<p>| 2026-02-13 01:51:10 | github | commit |  | feat: add Framer Motion animations and visual polish across all pages - Landing page: stagger hero animations, CountUp stats, card hover ef… |</p>
-<p>| 2026-02-13 01:32:14 | github | commit |  | style: improve typography and add design tokens Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 01:31:40 | github | commit |  | chore: add framer-motion dependency Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 01:29:48 | github | commit |  | Add frontend visual polish implementation plan Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 01:27:57 | github | commit |  | Add frontend visual polish design document Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com> |</p>
-<p>| 2026-02-13 01:20:44 | github | commit |  | Add AI agent API docs button to homepage Adds a toggleable "Are you AI Agent?" button that reveals inline API documentation for bot integra… |</p>
-<p>| 2026-02-13 00:40:34 | github | commit |  | Add spectator chat feature for real-time communication between viewers Adds a new spectator chat system using the existing SSE infrastructu… |</p>
-<p>| 2026-02-13 00:11:36 | github | commit |  | Add Solidity learning platform with code editor and problem-solving system Implement core features including Monaco-based Solidity editor,… |</p>
-<p>| 2026-02-12 23:33:24 | github | commit |  | Add P1 improvements: AI memory, dynamic odds, phase transitions - AI dialogue quality: key events layer gives AI long-term memory across ro… |</p>
-<p>| 2026-02-12 17:51:51 | github | commit |  | Add test coverage for prompts module and spectator interactions Tests for all 8 exported prompt builder functions and for createGame, addSp… |</p>
-<p>| 2026-02-12 17:46:03 | github | commit |  | Fix bugs and add dramatic event effects - Fix isMailfia typo → isMafia across all files (types, engine, strategy, prompts, tests) - Fix mis… |</p>
-<p>| 2026-02-12 17:34:06 | github | commit |  | Add sound system, tutorial onboarding, and mobile responsive layout - Procedural Web Audio API sound effects and BGM for game events - 4-st… |</p>
-<p>| 2026-02-12 17:27:30 | github | commit |  | Initial commit from Create Next App |</p>
-<p>| 2026-02-12 15:16:07 | github | commit |  | Add vitest test suite for game logic, betting, and strategy modules Set up vitest with path aliases, add unit tests covering win condition… |</p>
-<p>| 2026-02-12 15:15:58 | github | commit |  | Redesign UI with purple-noir palette and refined typography Switch from Geist to Syne/Outfit fonts, introduce a purple-noir gray color pale… |</p>
-<p>| 2026-02-12 05:28:41 | github | commit |  | Replace README with project ASCII art banner and AGENTS.md reference |</p>
-<p>| 2026-02-12 05:28:38 | github | commit |  | Rename CLAUDE.md to AGENTS.md |</p>
-<p>| 2026-02-12 05:21:57 | github | commit |  | Update CLAUDE.md with spectator system and full architecture docs Add spectator system docs (vote/hint/cost mechanics), betting table with… |</p>
-<p>| 2026-02-12 05:13:25 | github | commit |  | Add economy model design document Document point earning rates, betting odds/limits, spectator action costs, game cycle economics, and user… |</p>
-<p>| 2026-02-12 05:13:20 | github | commit |  | Display spectator action costs and balance check in UI Fetch vote/hint costs from spectator-cost endpoint on discussion phase. Show cost on… |</p>
-<p>| 2026-02-12 05:13:15 | github | commit |  | Charge points for spectator votes and hints Validate user balance and deduct cost before processing spectator vote/hint. Return cost in res… |</p>
-<p>| 2026-02-12 05:13:10 | github | commit |  | Add spectator cost calculation and API endpoint Add getTotalBets() and getSpectatorCosts() to betting.ts with scaling formula based on bet… |</p>
-<p>| 2026-02-12 03:34:23 | github | commit |  | Add help tooltips to spectator action labels Add a "?" icon next to "Suspicion Vote" and "Send Hint" labels with CSS hover tooltips explain… |</p>
-<p>| 2026-02-12 03:34:17 | github | commit |  | Remove payout display from bet history Remove the "→ +900" payout amount shown next to won bets in the game history section. |</p>
-<p>| 2026-02-12 03:29:06 | github | commit |  | Fix page scroll jumping when new chat messages arrive Replace scrollIntoView with container scrollTop to prevent the entire page from scrol… |</p>
-<p>| 2026-02-12 03:27:34 | github | commit |  | Remove nameKo surname stripping across all components nameKo now stores Korean transliterations (e.g. "오웬") instead of surname+given (e.g.… |</p>
-<p>| 2026-02-12 03:27:23 | github | commit |  | Replace random name pool with 7 fixed characters Use a fixed set of 7 characters (Owen, Leo, Max, Finn, Luna, Zoe, Ruby) with Korean transl… |</p>
-<p>| 2026-02-12 03:06:15 | github | commit |  | Auto-refresh user points balance on polling interval |</p>
-<p>| 2026-02-12 03:06:12 | github | commit |  | Remove payout amount display from bet results on game cards |</p>
-<p>| 2026-02-12 03:00:13 | github | commit |  | Show user bet info and results on game cards in dashboard |</p>
-<p>| 2026-02-12 03:00:05 | github | commit |  | Auto-refresh stats on polling interval so dashboard updates when games end |</p>
-<p>| 2026-02-12 02:52:05 | github | commit |  | Fix stats card height shift when switching between personality/name tabs Use CSS grid stacking to render both tab contents simultaneously,… |</p>
-<p>| 2026-02-12 02:47:53 | github | commit |  | Add per-name mafia selection rate stats with personality/name tab toggle |</p>
-<p>| 2026-02-12 02:47:45 | github | commit |  | Show personality labels on player selection buttons in betting phase |</p>
-<p>| 2026-02-12 02:33:35 | github | commit |  | Add in-game bet summary and update game board UI - Add /api/game/[id]/bet-summary endpoint for aggregated bet totals - Display bet pool in… |</p>
-<p>| 2026-02-12 02:33:25 | github | commit |  | Add lobby stats dashboard and live game status display - Add /api/game/stats endpoint: town/mafia win rates, per-personality mafia selectio… |</p>
-<p>| 2026-02-12 02:33:13 | github | commit |  | Add betting phase and improve pre-game overlay - Add "betting" to Phase type, games now start in betting phase - Add mafia_guess bet type w… |</p>
-<p>| 2026-02-12 02:33:02 | github | commit |  | Replace nickname registration with Web3 wallet authentication - Change users table: username -> walletAddress, use wallet address as primar… |</p>
-<p>| 2026-02-12 01:45:46 | github | commit |  | Add game balance simulation scripts Scripts for simulating and analyzing game balance, win rates, and betting outcomes. |</p>
-<p>| 2026-02-12 01:45:37 | github | commit |  | Add frontend: game UI with pixel-art village and bilingual support - Dark theme with custom animations (fadeInUp, shockPop) - Home page wit… |</p>
-<p>| 2026-02-12 01:45:25 | github | commit |  | Add API routes for game, user, and betting - Game CRUD: create, get state, list games - SSE streaming endpoint for real-time updates - Spec… |</p>
-<p>| 2026-02-12 01:45:15 | github | commit |  | Add backend: game engine, AI agents, database, and betting - Game types and SQLite schema with Drizzle ORM - SSE event bus for real-time fr… |</p>
-<p>| 2026-02-12 01:45:04 | github | commit |  | Add project dependencies and configuration Add SQLite (better-sqlite3), Drizzle ORM, nanoid, and OpenAI SDK. Configure Drizzle, update tsco… |</p>
-<p>| 2026-02-10 18:12:58 | github | commit |  | Remove random response probability feature |</p>
-<p>| 2026-02-10 18:12:48 | github | commit |  | Fix URL formatting with Korean particles |</p>
-<p>| 2026-02-09 05:14:38.584000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-09 04:24:44.581000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-09 04:20:59.064000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-09 04:17:52.243000 | slack | message |  | track-b-demo |</p>
-<p>| 2026-02-08 06:26:09 | github | commit |  | Strengthen language matching instructions in system prompt |</p>
-<p>| 2026-02-08 06:09:07 | github | commit |  | Use masked links and prevent bare URLs in prompts and Discord formatter |</p>
-<p>| 2026-02-07 16:29:20 | github | commit |  | Fix duplicate URL output in Discord message formatting |</p>
-<p>| 2026-02-07 16:19:11.566000 | slack | message |  | track-b-demo |</p>
-<p>| 2026-02-07 13:45:09.019000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-07 13:40:20.879000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 21:55:15.296000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 21:53:09.430000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 21:39:21 | github | commit |  | Add conversation end functionality - Add session lifecycle management (end/reactivate) - Detect ===END_CONVERSATION=== marker in agent resp… |</p>
-<p>| 2026-02-06 21:01:03 | github | commit |  | Add Railway deployment and bot evaluation results - Configure Railway deployment with environment variables - Add evaluation reports for re… |</p>
-<p>| 2026-02-06 21:01:03 | github | commit |  | Enhance Korean quality checks and Discord replies - Add strict brand name validation (토카막 네트워크, not 토카막) - Prevent token symbol translation… |</p>
-<p>| 2026-02-06 20:09:47.416000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 19:21:40.580000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 19:18:59.219000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-06 19:14:39 | github | commit |  | initial commit |</p>
-<p>| 2026-02-06 09:13:28.328000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 09:12:43.679000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 04:13:15.285000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-06 04:11:32.552000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-05 18:58:17.838000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-05 10:04:09 | github | commit |  | Merge pull request #74 from tokamak-network/feat/serialize-tx-execution feat: serialize transaction execution with mutex |</p>
-<p>| 2026-02-05 10:03:51 | github | commit |  | Merge pull request #73 from tokamak-network/refactor/remove-chain-id-rpc-call refactor: remove ChainID RPC call in favor of env config |</p>
-<p>| 2026-02-05 10:01:24 | github | commit |  | refactor: remove ChainID RPC call in favor of env config |</p>
-<p>| 2026-02-05 09:36:17.940000 | slack | message |  | track-b-demo |</p>
-<p>| 2026-02-05 09:23:16.252000 | slack | message |  | track-b-demo |</p>
-<p>| 2026-02-05 09:06:45.343000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-05 05:03:18.012000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-05 04:26:47.887000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-05 04:18:12.518000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-05 03:52:35.034000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-05 02:22:07.255000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-05 02:12:53 | github | commit |  | initial commit |</p>
-<p>| 2026-02-04 09:25:10.139000 | slack | message |  | project-eco |</p>
-<p>| 2026-02-04 05:10:13.088000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-03 16:29:10.951000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-03 11:18:11.473000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-03 10:02:06.862000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-03 10:00:53.777000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-03 07:15:39.729000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-03 00:18:26.951000 | slack | message |  | project-eco |</p>
-<p>| 2026-02-02 16:06:54.479000 | slack | message |  | ai-tokamak-network |</p>
-<p>| 2026-02-02 05:02:16.130000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-02 04:56:20.765000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-02 02:28:40.006000 | slack | message |  | tokamak-dev |</p>
-<p>| 2026-02-01 11:22:11 | github | commit |  | Merge pull request #68 from tokamak-network/refactor/cache-client-in-nodes refactor: cache client at node initialization instead of per-call |</p>
-<p>| 2026-02-01 11:19:20 | github | commit |  | refactor: use cached contract ABI instead of loading from file |</p>
-<p>| 2026-02-01 11:19:20 | github | commit |  | refactor: add package-level ABI caching in eth package |</p>
-<p>| 2026-02-01 11:19:20 | github | commit |  | chore: remove ABI file |</p>
-<p>| 2026-02-01 11:19:18 | github | commit |  | refactor: cache client at node initialization instead of per-call |</p>
-    </div>
-    <div class="details" id="detail-12">
-      <h2>Probation Completion Report - Kevin Jeong</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 1</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-13">
+    <div class="details" id="detail-6">
       <h2>Probation Completion Report - Kevin</h2>
 <h3>Period</h3>
 <ul>
@@ -2168,28 +1688,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 09:34:29.616000 | slack | message |  | ai-tokamak-network |</p>
 <p>| 2026-02-01 09:15:15.486000 | slack | message |  | ai-tokamak-network |</p>
     </div>
-    <div class="details" id="detail-14">
-      <h2>Probation Completion Report - Mehdi Beriane</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 5</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-15">
+    <div class="details" id="detail-7">
       <h2>Probation Completion Report - Mehdi</h2>
 <h3>Period</h3>
 <ul>
@@ -2403,28 +1902,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 15:47:05 | github | commit |  | forge fmt |</p>
 <p>| 2026-02-01 07:58:32.723000 | slack | message |  | project-drb |</p>
     </div>
-    <div class="details" id="detail-16">
-      <h2>Probation Completion Report - Monica Kim</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 4</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-17">
+    <div class="details" id="detail-8">
       <h2>Probation Completion Report - Monica</h2>
 <h3>Period</h3>
 <ul>
@@ -2730,28 +2208,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-03 04:55:58.626000 | slack | message |  | project_trh |</p>
 <p>| 2026-02-03 04:17:09.998000 | slack | message |  | project_trh |</p>
     </div>
-    <div class="details" id="detail-18">
-      <h2>Probation Completion Report - Sahil Wasnik</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 6</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-19">
+    <div class="details" id="detail-9">
       <h2>Probation Completion Report - Sahil</h2>
 <h3>Period</h3>
 <ul>
@@ -3103,28 +2560,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 14:32:29 | github | commit |  | added interact and monitoring tabs for DRB system stacks |</p>
 <p>| 2026-02-02 08:17:09 | github | commit |  | Merge pull request #187 from tokamak-network/fix/drb-integration-fixes fix: drb integration fixes |</p>
     </div>
-    <div class="details" id="detail-20">
-      <h2>Probation Completion Report - Suhyeon Lee</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 6</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-21">
+    <div class="details" id="detail-10">
       <h2>Probation Completion Report - Suhyeon</h2>
 <h3>Period</h3>
 <ul>
@@ -3321,28 +2757,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 15:28:48 | github | commit |  | Initial commit |</p>
 <p>| 2026-02-01 06:54:28.404000 | slack | message |  | project-drb |</p>
     </div>
-    <div class="details" id="detail-22">
-      <h2>Probation Completion Report - Theo Lee</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 3</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-23">
+    <div class="details" id="detail-11">
       <h2>Probation Completion Report - Theo</h2>
 <h3>Period</h3>
 <ul>
@@ -3807,28 +3222,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 01:39:58.098000 | slack | message |  | project_trh |</p>
 <p>| 2026-02-02 01:34:54.706000 | slack | message |  | project_trh |</p>
     </div>
-    <div class="details" id="detail-24">
-      <h2>Probation Completion Report - Thomas Shin</h2>
-<h3>Period</h3>
-<ul>
-<li>2026-02-01 to 2026-02-20</li>
-</ul>
-<h3>Data Coverage (by source)</h3>
-<ul>
-<li>gemini: 3</li>
-</ul>
-<h3>Key Achievements (Evidence-led)</h3>
-<h3>GitHub Reports</h3>
-<ul>
-<li>No GitHub activity recorded in this period.</li>
-</ul>
-<h3>Work Focus Analysis</h3>
-<p>Insufficient cross-source evidence to infer a dominant work focus in this period.</p>
-<h3>Records (latest first)</h3>
-<p>| timestamp | source | type | action | title |</p>
-<p>|---|---|---|---|---|</p>
-    </div>
-    <div class="details" id="detail-25">
+    <div class="details" id="detail-12">
       <h2>Probation Completion Report - Thomas</h2>
 <h3>Period</h3>
 <ul>
@@ -4152,7 +3546,7 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-02 04:21:05 | github | commit |  | feat(contracts): add local development environment with Anvil - Add Faucet deployment to DeployLocalScript - Create start-anvil.sh to start… |</p>
 <p>| 2026-02-02 04:19:20 | github | commit |  | feat: initial implementation of DAO Action Builder library - Add @dao-action-builder/core package with: - Etherscan ABI loading with proxy… |</p>
     </div>
-    <div class="details" id="detail-26">
+    <div class="details" id="detail-13">
       <h2>Probation Completion Report - Zena</h2>
 <h3>Period</h3>
 <ul>
@@ -4591,6 +3985,82 @@ hr{border:none;border-top:1px dashed #e0d2c4;margin:16px 0;}
 <p>| 2026-02-01 00:15:30.726000 | slack | message |  | project-eco |</p>
     </div>
   </section>
+<section class="section">
+  <h2>GitHub Activity Comparison</h2>
+  <p class="snip">Relative ranking based on GitHub record count in the period. Higher bars indicate more GitHub activity.</p>
+  <div class="chart">
+    <div class="bar">
+      <div class="name">Theo</div>
+      <div class="track"><div class="fill" style="width:100%"></div></div>
+      <div class="value">385</div>
+    </div>
+    <div class="bar">
+      <div class="name">Zena</div>
+      <div class="track"><div class="fill" style="width:97%"></div></div>
+      <div class="value">377</div>
+    </div>
+    <div class="bar">
+      <div class="name">Jake</div>
+      <div class="track"><div class="fill" style="width:80%"></div></div>
+      <div class="value">309</div>
+    </div>
+    <div class="bar">
+      <div class="name">Sahil</div>
+      <div class="track"><div class="fill" style="width:74%"></div></div>
+      <div class="value">288</div>
+    </div>
+    <div class="bar">
+      <div class="name">Thomas</div>
+      <div class="track"><div class="fill" style="width:69%"></div></div>
+      <div class="value">269</div>
+    </div>
+    <div class="bar">
+      <div class="name">Monica</div>
+      <div class="track"><div class="fill" style="width:63%"></div></div>
+      <div class="value">246</div>
+    </div>
+    <div class="bar">
+      <div class="name">Jason</div>
+      <div class="track"><div class="fill" style="width:55%"></div></div>
+      <div class="value">215</div>
+    </div>
+    <div class="bar">
+      <div class="name">Mehdi</div>
+      <div class="track"><div class="fill" style="width:37%"></div></div>
+      <div class="value">143</div>
+    </div>
+    <div class="bar">
+      <div class="name">Suhyeon</div>
+      <div class="track"><div class="fill" style="width:33%"></div></div>
+      <div class="value">128</div>
+    </div>
+    <div class="bar">
+      <div class="name">Harvey</div>
+      <div class="track"><div class="fill" style="width:30%"></div></div>
+      <div class="value">117</div>
+    </div>
+    <div class="bar">
+      <div class="name">Jaden</div>
+      <div class="track"><div class="fill" style="width:28%"></div></div>
+      <div class="value">108</div>
+    </div>
+    <div class="bar">
+      <div class="name">Kevin</div>
+      <div class="track"><div class="fill" style="width:13%"></div></div>
+      <div class="value">51</div>
+    </div>
+    <div class="bar">
+      <div class="name">Aamir</div>
+      <div class="track"><div class="fill" style="width:8%"></div></div>
+      <div class="value">34</div>
+    </div>
+    <div class="bar">
+      <div class="name">Irene</div>
+      <div class="track"><div class="fill" style="width:5%"></div></div>
+      <div class="value">20</div>
+    </div>
+  </div>
+</section>
 </div>
 <script>
 const search = document.getElementById('search');
