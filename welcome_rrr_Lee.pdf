@@ -2,7 +2,7 @@
 1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
 2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
 3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj
-4 0 obj << /Length 1827 >> stream
+4 0 obj << /Length 1866 >> stream
 BT
 /F1 12 Tf
 72 720 Td
@@ -17,8 +17,8 @@ BT
 72 592 Td (Checklist:) Tj
 72 576 Td (- <div class="item-title">? Basic settings: Set up 2FA</div><div class="item-sub">Please check <a href="https://docs.google.com/presentation/d/1lZ1MjgkiJMm6nD_Ln4auBNyf2zF_44MkdyLlA-E9s1c/edit?slide=id.g25eac3a2538_3_87#slide=id.g25eac3a2538_3_87">[PPT]</a> and proceed it (Google/Slack/Github).</div><div class="item-sub">Please enable Two-Factor Authentication (2FA) for enhanced account security. If not completed within a week after you onboarded, the account will be suspended.</div>) Tj
 72 560 Td (- <div class="item-title">? Set up your profile with pictures</div><div class="item-sub">Please update your profile on Google and Slack.</div>) Tj
-72 544 Td (- <div class="item-title">? Personal Information Consent & Verification Submission</div><div class="item-sub">Submit via <a href="https://www.notion.so/tokamak/Identity-Address-and-Salary-Wallet-Verification-Guide-206d96a400a38021aa45dd7095ea134c">[Notion]</a>.</div>) Tj
-72 528 Td (- <div class="item-title">? Review projects & express interest</div><div class="item-sub">Please review <a href="https://www.notion.so/tokamak/Tokamak-Network-Onboarding-523bc627bd374326b5dfbec3d3b0a8e1">all the projects</a> and reach out to any project leader you want to join.</div>) Tj
+72 544 Td (- <div class="item-title">? Personal Information Consent & Verification Submission</div><div class="item-sub">Check <a href="https://share.note.sx/op3a89uv#8riSv3+Tecs2qyZBzdC/kQJNDWZW2LtXK5CBFE0TJAc">[Obsidian]</a> and submit.</div>) Tj
+72 528 Td (- <div class="item-title">? General Guide book of HR</div><div class="item-sub">Please review this material to understand the company culture and the minimum rules, and be sure to check it. <a href="https://docs.google.com/presentation/d/1Jg8I8YWXIr44O5tGgRhXvmI67hhzHom6-yI5zwRCMac/edit?slide=id.g2cf9870a132_1_3#slide=id.g2cf9870a132_1_3">[link]</a></div>) Tj
 72 512 Td () Tj
 72 496 Td (Account details:) Tj
 72 480 Td (- Account: rrr@tokamak.network) Tj
@@ -36,8 +36,8 @@ xref
 0000000058 00000 n 
 0000000115 00000 n 
 0000000241 00000 n 
-0000002120 00000 n 
+0000002159 00000 n 
 trailer << /Size 6 /Root 1 0 R >>
 startxref
-2190
+2229
 %%EOF
