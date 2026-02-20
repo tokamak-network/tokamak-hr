@@ -15,3 +15,7 @@
 
 ## Work Focus Analysis
 Insufficient cross-source evidence to infer a dominant work focus in this period.
+
+## Records (latest first)
+| timestamp | source | type | action | title |
+|---|---|---|---|---|
