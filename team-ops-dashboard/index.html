@@ -19,7 +19,7 @@
           <p class="eyebrow">HR Operations</p>
           <h1>Tokamak Team Console</h1>
           <p class="subtitle">
-            One place to track onboarding, offboarding, and people status.
+            One place to track onboarding, offboarding, and member info management.
           </p>
         </div>
         <div class="hero-card">
@@ -52,20 +52,20 @@
 
       <section class="insights" id="overviewSection">
         <div class="stat">
-          <p class="stat-label">Total team members</p>
-          <p class="stat-value" id="statTotal">—</p>
+          <p class="stat-label">Active members</p>
+          <p class="stat-value" id="statActive">—</p>
         </div>
         <div class="stat">
           <p class="stat-label">Upcoming starts (14d)</p>
           <p class="stat-value" id="statUpcoming">—</p>
         </div>
         <div class="stat">
-          <p class="stat-label">R&amp;D flagged</p>
-          <p class="stat-value" id="statRnD">—</p>
+          <p class="stat-label">Onboarding in progress</p>
+          <p class="stat-value" id="statOnboarding">—</p>
         </div>
         <div class="stat">
-          <p class="stat-label">International</p>
-          <p class="stat-value" id="statIntl">—</p>
+          <p class="stat-label">Inactive members</p>
+          <p class="stat-value" id="statInactive">—</p>
         </div>
       </section>
 
@@ -197,6 +197,20 @@
         <button class="ghost" id="closeModal">Close</button>
       </div>
       <div class="modal-body" id="modalBody"></div>
+    </dialog>
+
+    <dialog id="emailModal">
+      <div class="modal-header">
+        <div>
+          <p class="modal-eyebrow">Onboarding Emails</p>
+          <h2>Send onboarding emails</h2>
+        </div>
+        <button class="ghost" id="closeEmailModal">Close</button>
+      </div>
+      <div class="modal-body" id="emailModalBody"></div>
+      <div class="modal-footer">
+        <button class="primary" id="markEmailsSent">Mark as sent</button>
+      </div>
     </dialog>
 
     <script src="app.js"></script>

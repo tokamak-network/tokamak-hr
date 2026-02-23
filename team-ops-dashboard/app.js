@@ -18,10 +18,10 @@ const elements = {
   statusFilter: document.getElementById("statusFilter"),
   rndFilter: document.getElementById("rndFilter"),
   pageButtons: document.querySelectorAll(".page-btn"),
-  statTotal: document.getElementById("statTotal"),
+  statActive: document.getElementById("statActive"),
   statUpcoming: document.getElementById("statUpcoming"),
-  statRnD: document.getElementById("statRnD"),
-  statIntl: document.getElementById("statIntl"),
+  statOnboarding: document.getElementById("statOnboarding"),
+  statInactive: document.getElementById("statInactive"),
   lastSynced: document.getElementById("lastSynced"),
   refreshButton: document.getElementById("refreshButton"),
   overviewSection: document.getElementById("overviewSection"),
@@ -40,6 +40,10 @@ const elements = {
   onboardPhone: document.getElementById("onboardPhone"),
   onboardAddress: document.getElementById("onboardAddress"),
   addOnboardButton: document.getElementById("addOnboardButton"),
+  emailModal: document.getElementById("emailModal"),
+  emailModalBody: document.getElementById("emailModalBody"),
+  closeEmailModal: document.getElementById("closeEmailModal"),
+  markEmailsSent: document.getElementById("markEmailsSent"),
   modal: document.getElementById("detailModal"),
   modalTitle: document.getElementById("modalTitle"),
   modalBody: document.getElementById("modalBody"),
@@ -57,40 +61,36 @@ const MEMBER_EDITS_KEY = "tokamak_team_member_edits_v1";
 
 const ONBOARDING_TEMPLATE = [
   { label: "임직원 정보 추가", mode: "auto" },
-  { label: "회사 계정 생성", mode: "auto" },
-  { label: "근로계약서/연봉계약서/보안서약서 발송", mode: "auto" },
+  { label: "회사 계정 생성", mode: "manual" },
+  { label: "근로계약서/연봉계약서/보안서약서 발송", mode: "manual" },
   {
-    label: "HR 캘린더 반영1: 수습시작일 / 수습종료일(3개월-1일) 일정 설정",
-    mode: "auto",
-  },
-  {
-    label: "캘린더 반영2: HR General OT(입사자이름)_Irene,입사자 -> Tokamak call로 반영",
-    mode: "auto",
+    label: "HR 캘린더 반영 1: 입사일/수습종료일 일정 생성",
+    mode: "manual",
   },
   {
     label: "개인별 폴더 생성 (구글 드라이브 -> Personal folder / Recording folder)",
-    mode: "auto",
+    mode: "manual",
   },
-  { label: "Tokamak 폴더 권한 부여", mode: "auto" },
-  { label: "슬랙 채널 초대", mode: "auto" },
-  { label: "토카막 캘린더 수락(메일함)", mode: "auto" },
+  { label: "Tokamak 폴더 권한 부여", mode: "manual" },
+  { label: "슬랙 채널 초대", mode: "manual" },
+  { label: "토카막 캘린더 수락(메일함)", mode: "manual" },
   {
     label:
       "구글 드라이브 내 '공유 문서함' 클릭 -> 내 드라이브로 바로가기 클릭(메일함_공유)",
-    mode: "auto",
+    mode: "manual",
   },
   { label: "레코딩 셋업(입사자 계정으로 구글 로그인하여 진행)", mode: "manual" },
-  { label: "HR 공지 채널에 입사 안내 슬랙 공지", mode: "auto" },
-  { label: "온보딩 메일 발송 (2개) -> 굿즈 발송 관련도 안내", mode: "auto" },
-  { label: "필수 제출 서류 제출 F/U", mode: "auto" },
+  { label: "HR 공지 채널에 입사 안내 슬랙 공지", mode: "manual" },
+  { label: "온보딩 메일 발송(3개)", mode: "auto" },
+  { label: "필수 제출 서류 제출 F/U", mode: "manual" },
   {
     label:
       "수습 종료 프로세스 일정 세팅 (서치펌 -> 6주째 때로 일정 생성) * 8주 이내로 평가 필요",
-    mode: "auto",
+    mode: "manual",
   },
-  { label: "All thing eye 신규 입사자 추가", mode: "auto" },
-  { label: "All thing eye > Welcome package 발송", mode: "auto" },
-  { label: "굿즈 발송 및 인증", mode: "auto" },
+  { label: "All thing eye 신규 입사자 추가", mode: "manual" },
+  { label: "All thing eye > Welcome package 발송", mode: "manual" },
+  { label: "굿즈 발송 및 인증", mode: "manual" },
 ];
 
 const LEGACY_REGISTRATION =
@@ -100,6 +100,116 @@ const TEMPLATE_MODE_MAP = ONBOARDING_TEMPLATE.reduce((acc, item) => {
   acc[item.label] = item.mode;
   return acc;
 }, {});
+
+const SENDER_EMAIL = "irene@tokamak.network";
+const EMAIL_TASK_LABEL = "온보딩 메일 발송(3개)";
+const EMAIL_TEMPLATES = [
+  {
+    subject: "[Tokamak Network] 1. Onboarding Documents",
+    body: `Dear {Name},
+This is HR from Tokamak Network :)
+
+Now, there are some documents you need to share with us in advance before we proceed with the contract process.
+
+1. Personal Information Collection and Usage Agreement (attached)
+- Please sign it through the drawing function in PDF
+
+2. Certificate of graduation(or Certificate of the expectant graduation)
+
+3. Attestation of qualifications and awards you included on your resume
+
+4. Passport scan copy(Passport(ID) photo(.png))
+
+5. First Name / Last(Family) Name
+
+6. Nationality
+
+7. Date of birth
+
+8. Telephone number 
+
+9. Emergency Contact
+
+10. Personal Email
+
+11. Address of living + Postal code
+
+12. Metamask Erc 20 address
+
+
+Could you prepare these within 1week? (But the sooner the better.)
+
+Best Regards,
+Tokamak Network.`,
+  },
+  {
+    subject: "[Tokamak Network] 2. Onboarding Process",
+    body: `Hi  {Name},
+
+Welcome to the team! The entire team of Tokamak Network is thrilled to welcome you on board.
+The procedure for working contracts and employee registration is as follows.
+
+
+[Following Step]
+
+1. Information related company tools and To do list
+* Your ID is: {WorkEmail}
+* Your PW is : hellotokamak
+
+
+1-1). Please download Chrome(*All crews always  work with Google Chrome) 
+: Please Check your Google emails. Login with your company account
+
+
+1-2). Google Drive and Google Calendar: Please sign in to Gmail with your company account
+: We always use Google Drive & Google Calendars as working tools
+- Please check calendar invitations in the mailbox and add all calendars on your Google calendar by accepting all.
+
+
+1-3). Please download the Slack and login with your company account ID
+- We always use slack as a communication app with team members.
+- You can check the invitation mail from Slack(Jaden&Irene) in your mailbox 
+- Please accept and join all channels that we invited you to.
+
+
+2. Onboarding day
+2-1). Start date: {StartDate}
+2-2). Your working hours : It's up to you (Regular working hours : 9/10am-6/7pm)
+
+
+See you on onboarding day! :)
+
+
+Best Regards,
+Tokamak Network.`,
+  },
+  {
+    subject: "[Tokamak Network] 3. Welcome package",
+    body: `Dear {Name},
+
+We are delighted to welcome you to the team and look forward to working with you soon. 
+As part of your onboarding, our HR team will be preparing and sending your Tokamak welcome package.
+
+To ensure smooth delivery, kindly provide the following information at your earliest convenience:
+Name : 
+Passport Name : 
+Full Address (including country and city) : 
+Postal Code (Zip Code) : 
+Phone Number : 
+Personal Email Address : 
+Your T-shirt size : 
+
+Please double-check each detail to ensure accurate delivery.
+
+Once you receive the welcome package, we would appreciate it if you could notify the HR team to confirm receipt.
+
+Should you have any questions during this process, feel free to reach out at any time. 
+We are here to support you every step of the way, and we are excited to have you with us soon.
+
+Warm regards,
+Tokamak Network.`,
+  },
+];
 
 const parseDate = (value) => {
   if (!value) return null;
@@ -165,20 +275,20 @@ const formatDate = (date) => {
 };
 
 const updateStats = () => {
-  elements.statTotal.textContent = state.members.length.toString();
+  const activeCount = state.members.filter(
+    (member) => getStatus(member) !== "inactive"
+  ).length;
+  elements.statActive.textContent = activeCount.toString();
 
   const upcoming = state.members.filter((member) => getStatus(member) === "upcoming");
   elements.statUpcoming.textContent = upcoming.length.toString();
 
-  const rnd = state.members.filter((member) =>
-    (member.r_and_d_flag || "").toLowerCase().includes("연구")
-  );
-  elements.statRnD.textContent = rnd.length.toString();
+  elements.statOnboarding.textContent = state.onboardings.length.toString();
 
-  const intl = state.members.filter((member) =>
-    (member.nationality || "").includes("비")
-  );
-  elements.statIntl.textContent = intl.length.toString();
+  const inactiveCount = state.members.filter(
+    (member) => getStatus(member) === "inactive"
+  ).length;
+  elements.statInactive.textContent = inactiveCount.toString();
 };
 
 const setPage = (nextPage) => {
@@ -497,12 +607,12 @@ const renderOnboarding = () => {
                   <input type="checkbox" data-index="${index}" ${
                     task.done ? "checked" : ""
                   } />
-                  <span>${task.label}</span>
-                  <span class="task-tag ${task.mode || "auto"}">${
-                    (task.mode || "auto").toUpperCase()
+                  <span>${index + 1}. ${task.label}</span>
+                  <span class="task-tag ${task.mode || "manual"}">${
+                    (task.mode || "manual").toUpperCase()
                   }</span>
                   ${
-                    (task.mode || "auto") === "auto"
+                    (task.mode || "manual") === "auto"
                       ? `<button class="run-btn" type="button" data-action="run" data-index="${index}" title="Run automation">⚡</button>`
                       : ""
                   }
@@ -524,9 +634,90 @@ const saveOnboarding = () => {
   localStorage.setItem(ONBOARDING_KEY, JSON.stringify(state.onboardings));
 };
 
+const escapeHtml = (value) => {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
+const fillTemplate = (text, data) => {
+  return text
+    .replace(/\{Name\}/g, data.name || "")
+    .replace(/\{name\}/g, (data.name || "").toLowerCase().replace(/\s+/g, ""))
+    .replace(/\{StartDate\}/g, data.startDate || "")
+    .replace(/\{WorkEmail\}/g, data.workEmail || "");
+};
+
+const buildMailto = (subject, body, recipients) => {
+  const to = encodeURIComponent(recipients.join(","));
+  const params = new URLSearchParams({
+    subject,
+    body,
+    from: SENDER_EMAIL,
+  });
+  return `mailto:${to}?${params.toString()}`;
+};
+
+const openEmailModal = (onboarding, taskIndex) => {
+  const recipients = [onboarding.email, onboarding.personalEmail].filter(Boolean);
+  const data = {
+    name: onboarding.name,
+    startDate: onboarding.startDate,
+    workEmail: onboarding.email,
+  };
+
+  elements.emailModalBody.innerHTML = EMAIL_TEMPLATES.map((template, idx) => {
+    const subject = fillTemplate(template.subject, data);
+    const body = fillTemplate(template.body, data);
+    return `
+      <div class="email-card" data-email-index="${idx}">
+        <h3>Email ${idx + 1}</h3>
+        <div class="email-meta">From: ${escapeHtml(
+          SENDER_EMAIL
+        )} · To: ${escapeHtml(recipients.join(", "))}</div>
+        <div class="email-meta">Subject</div>
+        <input class="email-subject" type="text" value="${escapeHtml(subject)}" />
+        <div class="email-meta">Body</div>
+        <textarea class="email-body-input" rows="8">${escapeHtml(body)}</textarea>
+        <div class="email-actions">
+          <button class="email-link" type="button" data-action="open-draft">
+            Open draft
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  elements.markEmailsSent.dataset.id = onboarding.id;
+  elements.markEmailsSent.dataset.index = String(taskIndex);
+  elements.emailModal.showModal();
+};
+
 const normalizeChecklist = (checklist = []) => {
   const expanded = [];
   checklist.forEach((task) => {
+    const normalizeLabel = (label) => {
+      if (
+        label ===
+        "캘린더 반영2: HR General OT(입사자이름)_Irene,입사자 -> Tokamak call로 반영"
+      ) {
+        return null;
+      }
+      if (
+        label ===
+        "HR 캘린더 반영1: 수습시작일 / 수습종료일(3개월-1일) 일정 설정"
+      ) {
+        return "HR 캘린더 반영 1: 입사일/수습종료일 일정 생성";
+      }
+      if (label === "온보딩 메일 발송 (2개) -> 굿즈 발송 관련도 안내") {
+        return "온보딩 메일 발송(3개)";
+      }
+      return label;
+    };
+
     if (typeof task === "string") {
       if (task === LEGACY_REGISTRATION) {
         const legacyTasks = [
@@ -535,16 +726,20 @@ const normalizeChecklist = (checklist = []) => {
           "레코딩 셋업(입사자 계정으로 구글 로그인하여 진행)",
         ];
         legacyTasks.forEach((label) => {
+          const normalized = normalizeLabel(label);
+          if (!normalized) return;
           expanded.push({
-            label,
-            mode: TEMPLATE_MODE_MAP[label] || "auto",
+            label: normalized,
+            mode: TEMPLATE_MODE_MAP[normalized] || "manual",
             done: false,
           });
         });
       } else {
+        const normalized = normalizeLabel(task);
+        if (!normalized) return;
         expanded.push({
-          label: task,
-          mode: TEMPLATE_MODE_MAP[task] || "auto",
+          label: normalized,
+          mode: TEMPLATE_MODE_MAP[normalized] || "manual",
           done: false,
         });
       }
@@ -558,9 +753,11 @@ const normalizeChecklist = (checklist = []) => {
         "레코딩 셋업(입사자 계정으로 구글 로그인하여 진행)",
       ];
       legacyTasks.forEach((label) => {
+        const normalized = normalizeLabel(label);
+        if (!normalized) return;
         expanded.push({
-          label,
-          mode: TEMPLATE_MODE_MAP[label] || "auto",
+          label: normalized,
+          mode: TEMPLATE_MODE_MAP[normalized] || "manual",
           done: Boolean(task.done),
         });
       });
@@ -568,11 +765,13 @@ const normalizeChecklist = (checklist = []) => {
     }
 
     if (task && task.label) {
-      expanded.push({
-        label: task.label,
-        mode: task.mode || TEMPLATE_MODE_MAP[task.label] || "auto",
-        done: Boolean(task.done),
-      });
+      const normalized = normalizeLabel(task.label);
+      if (!normalized) return;
+        expanded.push({
+          label: normalized,
+          mode: TEMPLATE_MODE_MAP[normalized] || task.mode || "manual",
+          done: Boolean(task.done),
+        });
     }
   });
 
@@ -618,6 +817,7 @@ const addOnboarding = () => {
     name,
     startDate,
     email,
+    personalEmail,
     checklist: ONBOARDING_TEMPLATE.map((task) => ({
       label: task.label,
       mode: task.mode,
@@ -736,10 +936,65 @@ const init = () => {
       const index = Number(event.target.dataset.index);
       const item = state.onboardings.find((entry) => entry.id === id);
       if (!item || Number.isNaN(index)) return;
+      const task = item.checklist[index];
+      if (task.label === EMAIL_TASK_LABEL) {
+        const payload = {
+          name: item.name,
+          start_date: item.startDate || "",
+          work_email: item.email || "",
+          personal_email: item.personalEmail || "",
+        };
+        fetch("http://127.0.0.1:8787/send-onboarding-emails", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then(async (response) => {
+            if (!response.ok) {
+              const data = await response.json().catch(() => ({}));
+              throw new Error(data.error || "Failed to send emails.");
+            }
+            return response.json();
+          })
+          .then(() => {
+            item.checklist[index].done = true;
+            saveOnboarding();
+            renderOnboarding();
+          })
+          .catch((error) => {
+            alert(error.message);
+          });
+        return;
+      }
       item.checklist[index].done = true;
       saveOnboarding();
       renderOnboarding();
     }
+  });
+  elements.closeEmailModal.addEventListener("click", () => elements.emailModal.close());
+  elements.emailModalBody.addEventListener("click", (event) => {
+    const action = event.target.dataset.action;
+    if (action !== "open-draft") return;
+    const card = event.target.closest(".email-card");
+    if (!card) return;
+    const subject = card.querySelector(".email-subject").value;
+    const body = card.querySelector(".email-body-input").value;
+    const id = elements.markEmailsSent.dataset.id;
+    const item = state.onboardings.find((entry) => entry.id === id);
+    if (!item) return;
+    const recipients = [item.email, item.personalEmail].filter(Boolean);
+    const mailto = buildMailto(subject, body, recipients);
+    window.location.href = mailto;
+  });
+  elements.markEmailsSent.addEventListener("click", () => {
+    const id = elements.markEmailsSent.dataset.id;
+    const index = Number(elements.markEmailsSent.dataset.index);
+    const item = state.onboardings.find((entry) => entry.id === id);
+    if (!item || Number.isNaN(index)) return;
+    item.checklist[index].done = true;
+    saveOnboarding();
+    renderOnboarding();
+    elements.emailModal.close();
   });
   setPage("overview");
 };
