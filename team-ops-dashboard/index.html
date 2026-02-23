@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tokamak HR Console</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Manrope:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">HR Operations</p>
+          <h1>Tokamak Team Console</h1>
+          <p class="subtitle">
+            One place to track onboarding, offboarding, and people status.
+          </p>
+        </div>
+        <div class="hero-card">
+          <div>
+            <p class="card-label">Data source</p>
+            <p class="card-value">Google Sheet (CSV snapshot)</p>
+          </div>
+          <div>
+            <p class="card-label">Last synced</p>
+            <p class="card-value" id="lastSynced">—</p>
+          </div>
+          <button class="primary" id="refreshButton">Reload data</button>
+        </div>
+      </header>
+
+      <nav class="page-nav" aria-label="Pages">
+        <button class="page-btn active" data-page="overview" type="button">
+          Overview
+        </button>
+        <button class="page-btn" data-page="active" type="button">
+          Team Members
+        </button>
+        <button class="page-btn" data-page="onboarding" type="button">
+          Onboarding
+        </button>
+        <button class="page-btn" data-page="inactive" type="button">
+          Inactive Members
+        </button>
+      </nav>
+
+      <section class="insights" id="overviewSection">
+        <div class="stat">
+          <p class="stat-label">Total team members</p>
+          <p class="stat-value" id="statTotal">—</p>
+        </div>
+        <div class="stat">
+          <p class="stat-label">Upcoming starts (14d)</p>
+          <p class="stat-value" id="statUpcoming">—</p>
+        </div>
+        <div class="stat">
+          <p class="stat-label">R&amp;D flagged</p>
+          <p class="stat-value" id="statRnD">—</p>
+        </div>
+        <div class="stat">
+          <p class="stat-label">International</p>
+          <p class="stat-value" id="statIntl">—</p>
+        </div>
+      </section>
+
+      <section class="directory" id="directorySection" hidden>
+        <div class="directory-header">
+          <h2 id="directoryTitle">Team Members</h2>
+          <p>Manage active and inactive team member records.</p>
+        </div>
+        <div class="project-manager">
+          <div>
+            <p class="project-title">Project library</p>
+            <p class="project-subtitle">Add or remove project names used in profiles.</p>
+          </div>
+          <div class="project-actions">
+            <input
+              id="projectInput"
+              type="text"
+              placeholder="Add new project name"
+              autocomplete="off"
+            />
+            <button class="primary" id="addProjectButton" type="button">Add</button>
+          </div>
+          <div class="project-list" id="projectList"></div>
+        </div>
+        <section class="controls">
+          <div class="search">
+            <label for="searchInput">Search</label>
+            <input
+              id="searchInput"
+              type="search"
+              placeholder="Name, email, team, title..."
+              autocomplete="off"
+            />
+          </div>
+          <div class="filters">
+            <label for="teamFilter">Project</label>
+            <select id="teamFilter"></select>
+            <label for="statusFilter">Status</label>
+            <select id="statusFilter">
+              <option value="all">All</option>
+              <option value="upcoming">Upcoming</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+            <label for="rndFilter">R&amp;D</label>
+            <select id="rndFilter">
+              <option value="all">All</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Project</th>
+                <th>Start date</th>
+                <th>Status</th>
+                <th>Work email</th>
+                <th>Personal email</th>
+                <th>Phone</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody id="teamTable"></tbody>
+          </table>
+        </section>
+      </section>
+
+      <section class="onboarding" id="onboardingSection" hidden>
+        <div class="directory-header">
+          <h2>Onboarding Checklist</h2>
+          <p>Create a checklist for every new hire and track progress.</p>
+        </div>
+
+        <div class="onboarding-form">
+          <div class="form-field">
+            <label for="onboardName">Name</label>
+            <input id="onboardName" type="text" placeholder="e.g. Jane Doe" />
+          </div>
+          <div class="form-field">
+            <label for="onboardStart">Start date</label>
+            <input id="onboardStart" type="date" />
+          </div>
+          <div class="form-field">
+            <label for="onboardEmail">Work email</label>
+            <input id="onboardEmail" type="email" placeholder="name@tokamak.network" />
+          </div>
+          <div class="form-field">
+            <label for="onboardRole">Role</label>
+            <input id="onboardRole" type="text" placeholder="e.g. Engineer" />
+          </div>
+          <div class="form-field">
+            <label for="onboardPersonalEmail">Personal email</label>
+            <input id="onboardPersonalEmail" type="email" placeholder="name@gmail.com" />
+          </div>
+          <div class="form-field">
+            <label for="onboardPhone">Phone</label>
+            <input id="onboardPhone" type="text" placeholder="010-0000-0000" />
+          </div>
+          <div class="form-field">
+            <label for="onboardAddress">Address</label>
+            <input id="onboardAddress" type="text" placeholder="Home address" />
+          </div>
+          <button class="primary" id="addOnboardButton" type="button">
+            Create checklist
+          </button>
+        </div>
+
+        <div class="onboarding-list" id="onboardingList"></div>
+      </section>
+
+      <footer class="footer">
+        <p>Local prototype · For HR & CEO only</p>
+      </footer>
+    </div>
+
+    <dialog id="detailModal">
+      <div class="modal-header">
+        <div>
+          <p class="modal-eyebrow" id="modalEyebrow">Member</p>
+          <h2 id="modalTitle">—</h2>
+        </div>
+        <button class="ghost" id="closeModal">Close</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
