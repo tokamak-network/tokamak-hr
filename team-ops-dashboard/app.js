@@ -9,6 +9,7 @@ const state = {
   onboardings: [],
   addedMembers: [],
   memberEdits: {},
+  activationSelectedId: null,
 };
 
 const elements = {
@@ -27,6 +28,8 @@ const elements = {
   overviewSection: document.getElementById("overviewSection"),
   directorySection: document.getElementById("directorySection"),
   directoryTitle: document.getElementById("directoryTitle"),
+  activationSection: document.getElementById("activationSection"),
+  activationList: document.getElementById("activationList"),
   projectInput: document.getElementById("projectInput"),
   addProjectButton: document.getElementById("addProjectButton"),
   projectList: document.getElementById("projectList"),
@@ -274,6 +277,44 @@ const formatDate = (date) => {
   });
 };
 
+const formatDateInput = (date) => {
+  if (!date) return "";
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const normalizeDateOnly = (date) => {
+  if (!date) return null;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+const getDueDate = (startDate, days) => {
+  const parsed = parseDate(startDate);
+  if (!parsed) return "";
+  const due = new Date(parsed.getTime() + days * MS_IN_DAY);
+  return formatDateInput(due);
+};
+
+const getDdayLabel = (dateValue) => {
+  const parsed = parseDate(dateValue);
+  if (!parsed) return "—";
+  const today = normalizeDateOnly(new Date());
+  const due = normalizeDateOnly(parsed);
+  const diff = Math.round((due - today) / MS_IN_DAY);
+  if (diff === 0) return "D-0";
+  if (diff > 0) return `D-${diff}`;
+  return `D+${Math.abs(diff)}`;
+};
+
+const getDayDiff = (startValue, endValue) => {
+  const start = normalizeDateOnly(parseDate(startValue));
+  const end = normalizeDateOnly(parseDate(endValue));
+  if (!start || !end) return null;
+  return Math.round((end - start) / MS_IN_DAY);
+};
+
 const updateStats = () => {
   const activeCount = state.members.filter(
     (member) => getStatus(member) !== "inactive"
@@ -285,10 +326,11 @@ const updateStats = () => {
 
   elements.statOnboarding.textContent = state.onboardings.length.toString();
 
-  const inactiveCount = state.members.filter(
-    (member) => getStatus(member) === "inactive"
-  ).length;
-  elements.statInactive.textContent = inactiveCount.toString();
+  const activationInProgress = state.onboardings.filter((item) => {
+    const mini = item.mini_os || {};
+    return !(mini.deliverable_done && mini.share_done);
+  }).length;
+  elements.statInactive.textContent = activationInProgress.toString();
 };
 
 const setPage = (nextPage) => {
@@ -299,11 +341,13 @@ const setPage = (nextPage) => {
 
   const onOverview = nextPage === "overview";
   const onOnboarding = nextPage === "onboarding";
+  const onActivation = nextPage === "activation";
   elements.overviewSection.hidden = !onOverview;
-  elements.directorySection.hidden = onOverview || onOnboarding;
+  elements.directorySection.hidden = onOverview || onOnboarding || onActivation;
   elements.onboardingSection.hidden = !onOnboarding;
+  elements.activationSection.hidden = !onActivation;
 
-  if (!onOverview && !onOnboarding) {
+  if (!onOverview && !onOnboarding && !onActivation) {
     state.view = nextPage === "inactive" ? "inactive" : "active";
     elements.directoryTitle.textContent =
       state.view === "inactive" ? "Inactive Members" : "Team Members";
@@ -365,7 +409,7 @@ const applyFilters = () => {
 const renderTable = () => {
   if (!state.filtered.length) {
     elements.table.innerHTML =
-      '<tr><td colspan="10">No matching team members.</td></tr>';
+      '<tr><td colspan="11">No matching team members.</td></tr>';
     return;
   }
 
@@ -383,6 +427,11 @@ const renderTable = () => {
           <td>${getProjectLabel(member) || "—"}</td>
           <td>${member.start_date || "—"}</td>
           <td><span class="badge ${status}">${status}</span></td>
+          <td>${
+            member.github_username
+              ? `<a class="link" href="https://github.com/${member.github_username}" target="_blank" rel="noreferrer">${member.github_username}</a>`
+              : "—"
+          }</td>
           <td>${member.email_work || "—"}</td>
           <td>${member.email_personal || "—"}</td>
           <td>${member.phone || "—"}</td>
@@ -416,6 +465,10 @@ const openModal = (member) => {
     <div class="modal-row">
       <div class="modal-label">Start date</div>
       <div><input id="editStart" type="text" value="${member.start_date || ""}" /></div>
+    </div>
+    <div class="modal-row">
+      <div class="modal-label">GitHub username</div>
+      <div><input id="editGithub" type="text" value="${member.github_username || ""}" /></div>
     </div>
     <div class="modal-row">
       <div class="modal-label">Work email</div>
@@ -508,6 +561,7 @@ const openModal = (member) => {
       name_ko: elements.modalBody.querySelector("#editNameKo").value.trim(),
       title: elements.modalBody.querySelector("#editRole").value.trim(),
       start_date: elements.modalBody.querySelector("#editStart").value.trim(),
+      github_username: elements.modalBody.querySelector("#editGithub").value.trim(),
       email_work: elements.modalBody.querySelector("#editWorkEmail").value.trim(),
       email_personal: elements.modalBody.querySelector("#editPersonalEmail").value.trim(),
       phone: elements.modalBody.querySelector("#editPhone").value.trim(),
@@ -779,10 +833,93 @@ const normalizeChecklist = (checklist = []) => {
 };
 
 const normalizeOnboarding = (items = []) => {
-  return items.map((item) => ({
-    ...item,
-    checklist: normalizeChecklist(item.checklist),
-  }));
+  return items.map((item) => {
+    const startDate = item.startDate || item.start_date || "";
+    const miniData = item.mini_os || {};
+    const improvData = item.improvement || {};
+    const miniDue = miniData.due_date || getDueDate(startDate, 14);
+    const improvDue = improvData.due_date || getDueDate(startDate, 30);
+    const memoLink = improvData.memo_link || improvData.memo || "";
+    return {
+      ...item,
+      checklist: normalizeChecklist(item.checklist),
+      mini_os: {
+        due_date: miniDue,
+        deliverable_type: "",
+        deliverable_link: "",
+        share_link: "",
+        deliverable_done: false,
+        share_done: false,
+        pr_merged: false,
+        pr_summary: "",
+        pr_title: "",
+        pr_status: "",
+        pr_files: "",
+        pr_last_analyzed: "",
+        note: "",
+        ...miniData,
+        due_date: miniDue,
+        pr_merged: typeof miniData.pr_merged === "boolean" ? miniData.pr_merged : false,
+      },
+      improvement: {
+        memo_link: memoLink,
+        due_date: improvDue,
+        issues: "",
+        suggestion: "",
+        difficulty: "Low",
+        impact: "",
+        submitted: false,
+        ...improvData,
+        memo_link: memoLink,
+        due_date: improvDue,
+      },
+    };
+  });
+};
+
+const findMemberForOnboarding = (item) => {
+  const email = (item.email || "").toLowerCase();
+  const personalEmail = (item.personalEmail || "").toLowerCase();
+  const name = (item.name || "").toLowerCase();
+  return state.members.find((member) => {
+    const work = (member.email_work || "").toLowerCase();
+    const personal = (member.email_personal || "").toLowerCase();
+    const memberName = (member.name_en || "").toLowerCase();
+    return (
+      (email && work === email) ||
+      (personalEmail && personal === personalEmail) ||
+      (name && memberName === name)
+    );
+  });
+};
+
+const syncOnboardingDatesFromMembers = () => {
+  let updated = false;
+  state.onboardings.forEach((item) => {
+    const member = findMemberForOnboarding(item);
+    const memberStart = member ? member.start_date : "";
+    if (!item.startDate && memberStart) {
+      item.startDate = memberStart;
+      updated = true;
+    }
+    if (item.startDate) {
+      item.mini_os = item.mini_os || {};
+      const miniDue = item.mini_os.due_date;
+      const miniDiff = miniDue ? getDayDiff(item.startDate, miniDue) : null;
+      if (!miniDue || (miniDiff !== null && miniDiff <= 2)) {
+        item.mini_os.due_date = getDueDate(item.startDate, 14);
+        updated = true;
+      }
+      item.improvement = item.improvement || {};
+      const improvDue = item.improvement.due_date;
+      const improvDiff = improvDue ? getDayDiff(item.startDate, improvDue) : null;
+      if (!improvDue || (improvDiff !== null && improvDiff <= 2)) {
+        item.improvement.due_date = getDueDate(item.startDate, 30);
+        updated = true;
+      }
+    }
+  });
+  if (updated) saveOnboarding();
 };
 
 const addOnboarding = () => {
@@ -818,6 +955,30 @@ const addOnboarding = () => {
     startDate,
     email,
     personalEmail,
+    mini_os: {
+      due_date: getDueDate(startDate, 14),
+      deliverable_type: "",
+      deliverable_link: "",
+      share_link: "",
+      deliverable_done: false,
+      share_done: false,
+      pr_merged: false,
+      pr_summary: "",
+      pr_title: "",
+      pr_status: "",
+      pr_files: "",
+      pr_last_analyzed: "",
+      note: "",
+    },
+    improvement: {
+      memo_link: "",
+      due_date: getDueDate(startDate, 30),
+      issues: "",
+      suggestion: "",
+      difficulty: "Low",
+      impact: "",
+      submitted: false,
+    },
     checklist: ONBOARDING_TEMPLATE.map((task) => ({
       label: task.label,
       mode: task.mode,
@@ -837,10 +998,218 @@ const addOnboarding = () => {
   syncProjectOptions();
   applyFilters();
   renderOnboarding();
+  renderActivation();
+};
+
+const renderActivation = () => {
+  if (!state.onboardings.length) {
+    elements.activationList.innerHTML = "<p>No onboarding records yet.</p>";
+    return;
+  }
+
+  syncOnboardingDatesFromMembers();
+
+  if (!state.activationSelectedId) {
+    state.activationSelectedId = state.onboardings[0].id;
+  }
+  const selected = state.onboardings.find(
+    (item) => item.id === state.activationSelectedId
+  );
+  const selectedItem = selected || state.onboardings[0];
+  state.activationSelectedId = selectedItem.id;
+
+  const renderDetail = (item) => {
+    const mini = item.mini_os || {};
+    const improv = item.improvement || {};
+    const startDate = item.startDate || "";
+    const dueDate = mini.due_date || getDueDate(startDate, 14);
+    const progressCount = [mini.deliverable_done, mini.share_done].filter(Boolean)
+      .length;
+    const progressLabel = progressCount === 2 ? "Done" : `${progressCount}/2`;
+    const progressClass = progressCount === 2 ? "badge--done" : "badge--open";
+    return `
+      <div class="activation-card" data-id="${item.id}">
+        <div class="activation-head">
+          <div>
+            <div class="activation-title">${item.name || "New hire"}</div>
+            <div class="activation-meta">${item.startDate || "—"} · ${
+      item.email || "—"
+    }</div>
+          </div>
+        </div>
+
+        <div class="activation-section">
+          <h4 class="activation-title-lg">🧩 Onboarding Mission1 (2weeks)</h4>
+          <p class="activation-note">
+            Within two weeks of joining, complete one development contribution that benefits the Tokamak ecosystem and share it publicly.
+          </p>
+          <div class="activation-mission">
+            <div class="mission-item">
+              <span>Start</span>
+              <strong>${startDate || "—"}</strong>
+            </div>
+            <div class="mission-item">
+              <span>Mission due</span>
+              <strong>${dueDate || "—"}</strong>
+            </div>
+            <div class="mission-item">
+              <span>D-day</span>
+              <strong>${getDdayLabel(dueDate)}</strong>
+            </div>
+            <div class="mission-item">
+              <span>Progress</span>
+              <strong class="badge ${progressClass}">${progressLabel}</strong>
+            </div>
+          </div>
+          <div class="activation-grid">
+            <div class="activation-field">
+              <label>Deliverable type</label>
+              <input type="text" class="activation-input" data-field="mini.deliverable_type" placeholder="Code / Doc / Research" value="${escapeHtml(
+                mini.deliverable_type || ""
+              )}" />
+            </div>
+            <div class="activation-field">
+              <label>Deliverable link (GitHub/Doc)</label>
+              <div class="activation-link-row">
+                <input type="url" class="activation-input" data-field="mini.deliverable_link" placeholder="PR / Doc / Notion link" value="${escapeHtml(
+                  mini.deliverable_link || ""
+                )}" />
+                <button class="activation-btn" type="button" data-action="analyze-pr">
+                  Analyze PR
+                </button>
+              </div>
+            </div>
+            <div class="activation-field">
+              <label>Public share link (Slack)</label>
+              <input type="url" class="activation-input" data-field="mini.share_link" placeholder="Slack thread / public post" value="${escapeHtml(
+                mini.share_link || ""
+              )}" />
+            </div>
+          </div>
+          <div class="activation-status">
+            <label>
+              <input type="checkbox" data-field="mini.deliverable_done" ${
+                mini.deliverable_done ? "checked" : ""
+              } />
+              Deliverable done
+            </label>
+            <label>
+              <input type="checkbox" data-field="mini.share_done" ${
+                mini.share_done ? "checked" : ""
+              } />
+              Public share done
+            </label>
+          </div>
+          <div class="activation-summary">
+            <div class="activation-summary-head">
+              <strong>PR Summary</strong>
+              <span>${escapeHtml(mini.pr_last_analyzed || "")}</span>
+            </div>
+            <p class="activation-summary-meta">${escapeHtml(mini.pr_title || "")}</p>
+            <p class="activation-summary-meta">${escapeHtml(mini.pr_status || "")}</p>
+            <p class="activation-summary-meta">Merge: ${mini.pr_merged ? "Merged" : "Not merged"}</p>
+            <p class="activation-summary-meta">${escapeHtml(mini.pr_files || "")}</p>
+            <p class="activation-summary-body">${escapeHtml(mini.pr_summary || "")}</p>
+          </div>
+        </div>
+
+        <div class="activation-section">
+          <h4>🔧 Improvement Incubator (30-day memo)</h4>
+          <p class="activation-note">
+            1-page Improvement Memo within 30 days. HR aggregates for the quarterly
+            Newcomer Insight Report.
+          </p>
+          <div class="activation-grid">
+            <div class="activation-field">
+              <label>Due date</label>
+              <input type="date" class="activation-input" data-field="improv.due_date" value="${improv.due_date || ""}" />
+            </div>
+            <div class="activation-field">
+              <label>Memo link</label>
+              <input type="url" class="activation-input" data-field="improv.memo_link" placeholder="Notion/Doc link" value="${escapeHtml(
+                improv.memo_link || ""
+              )}" />
+            </div>
+            <div class="activation-field">
+              <label>Inefficiencies (2)</label>
+              <textarea class="activation-textarea" data-field="improv.issues" placeholder="Two inefficiencies noticed">${escapeHtml(
+                improv.issues || ""
+              )}</textarea>
+            </div>
+            <div class="activation-field">
+              <label>Suggestion</label>
+              <textarea class="activation-textarea" data-field="improv.suggestion" placeholder="Proposed improvements">${escapeHtml(
+                improv.suggestion || ""
+              )}</textarea>
+            </div>
+            <div class="activation-field">
+              <label>Difficulty</label>
+              <select class="activation-select" data-field="improv.difficulty">
+                ${["Low", "Mid", "High"]
+                  .map(
+                    (level) =>
+                      `<option value="${level}" ${
+                        level === (improv.difficulty || "Low") ? "selected" : ""
+                      }>${level}</option>`
+                  )
+                  .join("")}
+              </select>
+            </div>
+            <div class="activation-field">
+              <label>Expected impact</label>
+              <textarea class="activation-textarea" data-field="improv.impact" placeholder="Expected effect">${escapeHtml(
+                improv.impact || ""
+              )}</textarea>
+            </div>
+          </div>
+          <div class="activation-status">
+            <label>
+              <input type="checkbox" data-field="improv.submitted" ${
+                improv.submitted ? "checked" : ""
+              } />
+              Memo submitted
+            </label>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  const listMarkup = state.onboardings
+    .map((item) => {
+      const mini = item.mini_os || {};
+      const progressCount = [mini.deliverable_done, mini.share_done].filter(Boolean)
+        .length;
+      const progressLabel = progressCount === 2 ? "Done" : `${progressCount}/2`;
+      const isActive = item.id === selectedItem.id;
+      return `
+        <button class="activation-person ${isActive ? "active" : ""}" type="button" data-action="select-activation" data-id="${item.id}">
+          <div class="activation-person-name">${item.name || "New hire"}</div>
+          <div class="activation-person-meta">${item.startDate || "—"}</div>
+          <div class="activation-person-progress">${progressLabel}</div>
+        </button>
+      `;
+    })
+    .join("");
+
+  elements.activationList.innerHTML = `
+    <div class="activation-layout">
+      <div class="activation-sidebar">
+        <p class="activation-sidebar-title">New hires</p>
+        <div class="activation-person-list">
+          ${listMarkup}
+        </div>
+      </div>
+      <div class="activation-detail">
+        ${renderDetail(selectedItem)}
+      </div>
+    </div>
+  `;
 };
 
 const attachRowHandlers = () => {
   elements.table.addEventListener("click", (event) => {
+    if (event.target.closest("a")) return;
     const row = event.target.closest("tr");
     if (!row) return;
     const member = state.filtered.find((item) => item.no === row.dataset.no);
@@ -884,6 +1253,7 @@ const loadData = async () => {
   syncProjectOptions();
   applyFilters();
   renderOnboarding();
+  renderActivation();
 };
 
 const init = () => {
@@ -995,6 +1365,93 @@ const init = () => {
     saveOnboarding();
     renderOnboarding();
     elements.emailModal.close();
+  });
+  elements.activationList.addEventListener("input", (event) => {
+    const card = event.target.closest(".activation-card");
+    if (!card) return;
+    const id = card.dataset.id;
+    const field = event.target.dataset.field;
+    const item = state.onboardings.find((entry) => entry.id === id);
+    if (!item || !field) return;
+
+    if (field.startsWith("mini.")) {
+      const key = field.replace("mini.", "");
+      if (event.target.type === "checkbox") {
+        item.mini_os[key] = event.target.checked;
+      } else {
+        item.mini_os[key] = event.target.value;
+      }
+    }
+
+    if (field.startsWith("improv.")) {
+      const key = field.replace("improv.", "");
+      if (event.target.type === "checkbox") {
+        item.improvement[key] = event.target.checked;
+      } else {
+        item.improvement[key] = event.target.value;
+      }
+    }
+
+    saveOnboarding();
+  });
+  elements.activationList.addEventListener("click", (event) => {
+    const actionTarget = event.target.closest("[data-action]");
+    const action = actionTarget ? actionTarget.dataset.action : "";
+    if (action === "select-activation") {
+      const button = event.target.closest("button[data-id]");
+      if (!button) return;
+      state.activationSelectedId = button.dataset.id;
+      renderActivation();
+      return;
+    }
+    if (action !== "analyze-pr") return;
+    const card = event.target.closest(".activation-card");
+    if (!card) return;
+    const id = card.dataset.id;
+    const item = state.onboardings.find((entry) => entry.id === id);
+    if (!item) return;
+    const linkInput = card.querySelector("input[data-field=\"mini.deliverable_link\"]");
+    const prUrl = linkInput ? linkInput.value.trim() : "";
+    if (!prUrl) {
+      alert("Please enter a GitHub PR link first.");
+      return;
+    }
+    actionTarget.disabled = true;
+    actionTarget.textContent = "Analyzing...";
+    fetch("http://127.0.0.1:8787/summarize-github", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: prUrl }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          const data = await response.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to summarize PR.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const statusText = data.status || "";
+        const isMerged = statusText.toLowerCase() === "merged";
+        item.mini_os.pr_summary = data.summary || "";
+        item.mini_os.pr_title = data.title || "";
+        item.mini_os.pr_status = statusText;
+        item.mini_os.pr_files = data.files || "";
+        item.mini_os.pr_last_analyzed = data.analyzed_at || "";
+        item.mini_os.pr_merged = isMerged;
+        if (isMerged) {
+          item.mini_os.deliverable_done = true;
+        }
+        saveOnboarding();
+        renderActivation();
+      })
+      .catch((error) => {
+        alert(error.message);
+      })
+      .finally(() => {
+        actionTarget.disabled = false;
+        actionTarget.textContent = "Analyze PR";
+      });
   });
   setPage("overview");
 };

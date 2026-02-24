@@ -1,8 +1,12 @@
 import base64
+import os
+import re
+import time
+from datetime import datetime
+from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email import encoders
 from pathlib import Path
 
 from flask import Flask, jsonify, request
@@ -11,6 +15,7 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+import requests
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 BASE_DIR = Path(__file__).resolve().parent
@@ -22,6 +27,10 @@ SENDER_EMAIL = "irene@tokamak.network"
 ATTACHMENT_PATH = Path(
     "/Users/irene/Desktop/Personal Information Usage Agreement_Tokamak Network PTE.LTD.).pdf"
 )
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
+OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
 
 EMAIL_TEMPLATES = [
     {
@@ -138,6 +147,156 @@ app = Flask(__name__)
 CORS(app)
 
 
+def parse_pr_url(pr_url):
+    match = re.match(r"https://github.com/([^/]+)/([^/]+)/pull/(\\d+)", pr_url)
+    if not match:
+        raise ValueError("Invalid GitHub PR URL.")
+    owner, repo, number = match.groups()
+    return owner, repo, int(number)
+
+
+def parse_commit_url(commit_url):
+    match = re.match(r"https://github.com/([^/]+)/([^/]+)/commit/([0-9a-fA-F]+)", commit_url)
+    if not match:
+        raise ValueError("Invalid GitHub commit URL.")
+    owner, repo, sha = match.groups()
+    return owner, repo, sha
+
+
+def github_headers():
+    headers = {"Accept": "application/vnd.github+json"}
+    if GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {GITHUB_TOKEN}"
+    return headers
+
+
+def fetch_pr_data(pr_url):
+    owner, repo, number = parse_pr_url(pr_url)
+    base = f"https://api.github.com/repos/{owner}/{repo}/pulls/{number}"
+    pr_response = requests.get(base, headers=github_headers(), timeout=20)
+    pr_response.raise_for_status()
+    pr_data = pr_response.json()
+
+    files_response = requests.get(
+        f"{base}/files?per_page=100", headers=github_headers(), timeout=20
+    )
+    files_response.raise_for_status()
+    files_data = files_response.json()
+
+    files_summary = []
+    patch_snippets = []
+    for item in files_data[:20]:
+        files_summary.append(
+            f"{item.get('filename')} (+{item.get('additions')}, -{item.get('deletions')})"
+        )
+        patch = item.get("patch")
+        if patch:
+            patch_snippets.append(f"File: {item.get('filename')}\\n{patch[:1200]}")
+
+    return pr_data, files_summary, patch_snippets
+
+
+def fetch_commit_data(commit_url):
+    owner, repo, sha = parse_commit_url(commit_url)
+    base = f"https://api.github.com/repos/{owner}/{repo}/commits/{sha}"
+    commit_response = requests.get(base, headers=github_headers(), timeout=20)
+    commit_response.raise_for_status()
+    commit_data = commit_response.json()
+
+    files_summary = []
+    patch_snippets = []
+    for item in commit_data.get("files", [])[:20]:
+        files_summary.append(
+            f"{item.get('filename')} (+{item.get('additions')}, -{item.get('deletions')})"
+        )
+        patch = item.get("patch")
+        if patch:
+            patch_snippets.append(f"File: {item.get('filename')}\\n{patch[:1200]}")
+
+    return commit_data, files_summary, patch_snippets
+
+
+def summarize_pr(pr_data, files_summary, patch_snippets):
+    if not OPENAI_API_KEY:
+        raise RuntimeError("Missing OPENAI_API_KEY environment variable.")
+
+    prompt = (
+        "You are summarizing a GitHub Pull Request for HR onboarding evaluation.\\n"
+        "Explain what the new hire built in clear, non-technical language, then add a concise technical summary.\\n\\n"
+        f"PR Title: {pr_data.get('title')}\\n"
+        f"PR Author: {pr_data.get('user', {}).get('login')}\\n"
+        f"PR State: {pr_data.get('state')} | Merged: {pr_data.get('merged')}\\n"
+        f"PR Description:\\n{pr_data.get('body') or 'No description.'}\\n\\n"
+        "Files changed:\\n- " + "\\n- ".join(files_summary) + "\\n\\n" + "\\n\\n".join(patch_snippets)
+    )
+
+    data = call_openai(prompt)
+
+    # responses API returns output array; take first text block
+    output = data.get("output", [])
+    text = ""
+    for item in output:
+        if item.get("type") == "message":
+            for content in item.get("content", []):
+                if content.get("type") == "output_text":
+                    text += content.get("text", "")
+    return text.strip()
+
+
+def summarize_commit(commit_data, files_summary, patch_snippets):
+    if not OPENAI_API_KEY:
+        raise RuntimeError("Missing OPENAI_API_KEY environment variable.")
+
+    prompt = (
+        "You are summarizing a GitHub Commit for HR onboarding evaluation.\\n"
+        "Explain what the new hire built in clear, non-technical language, then add a concise technical summary.\\n\\n"
+        f"Commit SHA: {commit_data.get('sha')}\\n"
+        f"Author: {commit_data.get('commit', {}).get('author', {}).get('name')}\\n"
+        f"Message: {commit_data.get('commit', {}).get('message')}\\n\\n"
+        "Files changed:\\n- " + "\\n- ".join(files_summary) + "\\n\\n" + "\\n\\n".join(patch_snippets)
+    )
+
+    data = call_openai(prompt)
+
+    output = data.get("output", [])
+    text = ""
+    for item in output:
+        if item.get("type") == "message":
+            for content in item.get("content", []):
+                if content.get("type") == "output_text":
+                    text += content.get("text", "")
+    return text.strip()
+
+
+def call_openai(prompt):
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "model": OPENAI_MODEL,
+        "input": prompt,
+        "temperature": 0.2,
+    }
+    last_error = None
+    for attempt in range(3):
+        response = requests.post(
+            "https://api.openai.com/v1/responses",
+            headers=headers,
+            json=payload,
+            timeout=60,
+        )
+        if response.status_code == 429:
+            last_error = response.text
+            time.sleep(2 ** attempt)
+            continue
+        if response.status_code in (401, 403):
+            raise RuntimeError("OpenAI auth error. Check API key and billing.")
+        response.raise_for_status()
+        return response.json()
+    raise RuntimeError(f"OpenAI rate limit. Try again in 1-2 minutes. ({last_error})")
+
+
 def fill_template(text, data):
     return (
         text.replace("{Name}", data.get("name", ""))
@@ -215,7 +374,10 @@ def send_onboarding_emails():
     try:
         service = get_gmail_service()
     except RuntimeError as exc:
-        return jsonify({"error": str(exc)}), 401
+        message = str(exc)
+        if "rate limit" in message.lower():
+            return jsonify({"error": message}), 429
+        return jsonify({"error": message}), 401
 
     sent_ids = []
     for template in EMAIL_TEMPLATES:
@@ -226,6 +388,50 @@ def send_onboarding_emails():
         sent_ids.append(result.get("id"))
 
     return jsonify({"status": "sent", "ids": sent_ids})
+
+
+@app.route("/summarize-github", methods=["POST"])
+def summarize_github_route():
+    payload = request.get_json() or {}
+    url = payload.get("url", "").strip()
+    if not url:
+        return jsonify({"error": "Missing url."}), 400
+
+    try:
+        if "/pull/" in url:
+            pr_data, files_summary, patch_snippets = fetch_pr_data(url)
+            summary = summarize_pr(pr_data, files_summary, patch_snippets)
+            status = "Merged" if pr_data.get("merged") else pr_data.get("state", "unknown")
+            title = pr_data.get("title", "")
+            files_text = ", ".join(files_summary[:6])
+        elif "/commit/" in url:
+            commit_data, files_summary, patch_snippets = fetch_commit_data(url)
+            summary = summarize_commit(commit_data, files_summary, patch_snippets)
+            status = commit_data.get("commit", {}).get("message", "")
+            title = commit_data.get("sha", "")[:8]
+            files_text = ", ".join(files_summary[:6])
+        else:
+            raise ValueError("URL must be a GitHub PR or commit link.")
+    except ValueError as exc:
+        return jsonify({"error": str(exc)}), 400
+    except requests.HTTPError as exc:
+        return jsonify({"error": f"GitHub request failed: {exc}"}), 502
+    except RuntimeError as exc:
+        return jsonify({"error": str(exc)}), 401
+    except Exception as exc:
+        return jsonify({"error": f"Unexpected error: {exc}"}), 500
+
+    analyzed_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC")
+
+    return jsonify(
+        {
+            "summary": summary,
+            "title": title,
+            "status": status,
+            "files": files_text,
+            "analyzed_at": analyzed_at,
+        }
+    )
 
 
 if __name__ == "__main__":

@@ -45,6 +45,9 @@
         <button class="page-btn" data-page="onboarding" type="button">
           Onboarding
         </button>
+        <button class="page-btn" data-page="activation" type="button">
+          Onboarding Activation Engine
+        </button>
         <button class="page-btn" data-page="inactive" type="button">
           Inactive Members
         </button>
@@ -56,7 +59,7 @@
           <p class="stat-value" id="statActive">—</p>
         </div>
         <div class="stat">
-          <p class="stat-label">Upcoming starts (14d)</p>
+          <p class="stat-label">Upcoming starts</p>
           <p class="stat-value" id="statUpcoming">—</p>
         </div>
         <div class="stat">
@@ -64,7 +67,7 @@
           <p class="stat-value" id="statOnboarding">—</p>
         </div>
         <div class="stat">
-          <p class="stat-label">Inactive members</p>
+          <p class="stat-label">Activation Engine in progress</p>
           <p class="stat-value" id="statInactive">—</p>
         </div>
       </section>
@@ -129,6 +132,7 @@
                 <th>Project</th>
                 <th>Start date</th>
                 <th>Status</th>
+                <th>GitHub</th>
                 <th>Work email</th>
                 <th>Personal email</th>
                 <th>Phone</th>
@@ -181,6 +185,14 @@
         </div>
 
         <div class="onboarding-list" id="onboardingList"></div>
+      </section>
+
+      <section class="activation" id="activationSection" hidden>
+        <div class="directory-header">
+          <h2>Onboarding Activation Engine</h2>
+          <p>Design and run activation workflows that turn new hires into active contributors.</p>
+        </div>
+        <div class="activation-list" id="activationList"></div>
       </section>
 
       <footer class="footer">
