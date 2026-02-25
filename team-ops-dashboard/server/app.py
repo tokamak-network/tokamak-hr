@@ -2,6 +2,7 @@ import base64
 import os
 import re
 import time
+from datetime import timedelta
 from datetime import datetime
 from email import encoders
 from email.mime.base import MIMEBase
@@ -22,6 +23,24 @@ BASE_DIR = Path(__file__).resolve().parent
 SECRETS_DIR = BASE_DIR / ".secrets"
 CREDENTIALS_PATH = SECRETS_DIR / "credentials.json"
 TOKEN_PATH = SECRETS_DIR / "token.json"
+ENV_PATH = BASE_DIR / ".env"
+
+
+def load_env(path: Path) -> None:
+    if not path.exists():
+        return
+    for line in path.read_text().splitlines():
+        raw = line.strip()
+        if not raw or raw.startswith("#") or "=" not in raw:
+            continue
+        key, value = raw.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("\"").strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+load_env(ENV_PATH)
 
 SENDER_EMAIL = "irene@tokamak.network"
 ATTACHMENT_PATH = Path(
@@ -31,6 +50,28 @@ ATTACHMENT_PATH = Path(
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
+
+
+def github_error_message(response):
+    if response is None:
+        return "GitHub request failed."
+    status = response.status_code
+    rate_remaining = response.headers.get("X-RateLimit-Remaining", "")
+    try:
+        payload = response.json()
+        detail = payload.get("message", "")
+    except ValueError:
+        detail = ""
+
+    if status == 401:
+        return "GitHub unauthorized. Check that your token is valid."
+    if status == 403:
+        if rate_remaining == "0":
+            return "GitHub rate limit exceeded. Try again later or use a token with higher limits."
+        return "GitHub forbidden. The token likely lacks access to this repo or required scopes."
+    if detail:
+        return f"GitHub error {status}: {detail}"
+    return f"GitHub error {status}."
 
 EMAIL_TEMPLATES = [
     {
@@ -415,7 +456,7 @@ def summarize_github_route():
     except ValueError as exc:
         return jsonify({"error": str(exc)}), 400
     except requests.HTTPError as exc:
-        return jsonify({"error": f"GitHub request failed: {exc}"}), 502
+        return jsonify({"error": github_error_message(exc.response)}), 502
     except RuntimeError as exc:
         return jsonify({"error": str(exc)}), 401
     except Exception as exc:
@@ -432,6 +473,86 @@ def summarize_github_route():
             "analyzed_at": analyzed_at,
         }
     )
+
+
+@app.route("/github-activity", methods=["POST"])
+def github_activity_route():
+    payload = request.get_json() or {}
+    username = payload.get("username", "").strip()
+    days = int(payload.get("days", 14))
+    if not username:
+        return jsonify({"error": "Missing username."}), 400
+
+    since = (datetime.utcnow() - timedelta(days=days)).strftime("%Y-%m-%d")
+    search_headers = github_headers()
+    search_headers["Accept"] = (
+        "application/vnd.github+json, application/vnd.github.cloak-preview"
+    )
+
+    items = []
+
+    def add_item(item_type, url, title, repo, updated_at):
+        items.append(
+            {
+                "type": item_type,
+                "url": url,
+                "title": title,
+                "repo": repo,
+                "updated_at": updated_at,
+            }
+        )
+
+    try:
+        pr_query = f"author:{username} org:tokamak-network is:pr created:>={since}"
+        pr_response = requests.get(
+            "https://api.github.com/search/issues",
+            headers=search_headers,
+            params={"q": pr_query, "sort": "updated", "order": "desc", "per_page": 6},
+            timeout=20,
+        )
+        pr_response.raise_for_status()
+        for pr in pr_response.json().get("items", []):
+            repo = pr.get("repository_url", "").split("/repos/")[-1]
+            add_item(
+                "PR",
+                pr.get("html_url", ""),
+                pr.get("title", ""),
+                repo,
+                pr.get("updated_at", ""),
+            )
+
+        commit_query = (
+            f"author:{username} org:tokamak-network committer-date:>={since}"
+        )
+        commit_response = requests.get(
+            "https://api.github.com/search/commits",
+            headers=search_headers,
+            params={
+                "q": commit_query,
+                "sort": "committer-date",
+                "order": "desc",
+                "per_page": 6,
+            },
+            timeout=20,
+        )
+        commit_response.raise_for_status()
+        for commit in commit_response.json().get("items", []):
+            repo = commit.get("repository", {}).get("full_name", "")
+            add_item(
+                "Commit",
+                commit.get("html_url", ""),
+                commit.get("commit", {}).get("message", "").split("\\n")[0],
+                repo,
+                commit.get("commit", {}).get("committer", {}).get("date", ""),
+            )
+    except requests.HTTPError as exc:
+        return jsonify({"error": github_error_message(exc.response)}), 502
+    except Exception as exc:
+        return jsonify({"error": f"Unexpected error: {exc}"}), 500
+
+    items.sort(key=lambda item: item.get("updated_at", ""), reverse=True)
+
+    return jsonify({"items": items[:8], "since": since})
 
 
 if __name__ == "__main__":

@@ -851,6 +851,7 @@ const normalizeOnboarding = (items = []) => {
         deliverable_done: false,
         share_done: false,
         pr_merged: false,
+        activity_suggestions: [],
         pr_summary: "",
         pr_title: "",
         pr_status: "",
@@ -955,18 +956,19 @@ const addOnboarding = () => {
     startDate,
     email,
     personalEmail,
-    mini_os: {
-      due_date: getDueDate(startDate, 14),
-      deliverable_type: "",
-      deliverable_link: "",
-      share_link: "",
-      deliverable_done: false,
-      share_done: false,
-      pr_merged: false,
-      pr_summary: "",
-      pr_title: "",
-      pr_status: "",
-      pr_files: "",
+      mini_os: {
+        due_date: getDueDate(startDate, 14),
+        deliverable_type: "",
+        deliverable_link: "",
+        share_link: "",
+        deliverable_done: false,
+        share_done: false,
+        pr_merged: false,
+        activity_suggestions: [],
+        pr_summary: "",
+        pr_title: "",
+        pr_status: "",
+        pr_files: "",
       pr_last_analyzed: "",
       note: "",
     },
@@ -1019,6 +1021,8 @@ const renderActivation = () => {
   state.activationSelectedId = selectedItem.id;
 
   const renderDetail = (item) => {
+    const member = findMemberForOnboarding(item);
+    const github = member?.github_username || "";
     const mini = item.mini_os || {};
     const improv = item.improvement || {};
     const startDate = item.startDate || "";
@@ -1034,7 +1038,7 @@ const renderActivation = () => {
             <div class="activation-title">${item.name || "New hire"}</div>
             <div class="activation-meta">${item.startDate || "—"} · ${
       item.email || "—"
-    }</div>
+    }${github ? ` · <a class="link" href="https://github.com/${github}" target="_blank" rel="noreferrer">${github}</a>` : ""}</div>
           </div>
         </div>
 
@@ -1085,6 +1089,30 @@ const renderActivation = () => {
                 mini.share_link || ""
               )}" />
             </div>
+          </div>
+          <div class="activation-suggest">
+            <button class="activation-btn ghost" type="button" data-action="fetch-github">
+              Fetch from GitHub
+            </button>
+            ${
+              (mini.activity_suggestions || []).length
+                ? `<div class="activation-suggest-list">
+                    ${(mini.activity_suggestions || [])
+                      .map(
+                        (activity, idx) => `
+                      <button class="activation-suggest-item" type="button" data-action="use-activity" data-link="${escapeHtml(
+                        activity.url
+                      )}" data-type="${escapeHtml(activity.type)}">
+                        <span>${escapeHtml(activity.type)} ${idx + 1}</span>
+                        <strong>${escapeHtml(activity.title || activity.url)}</strong>
+                        <em>${escapeHtml(activity.repo || "")}</em>
+                      </button>
+                    `
+                      )
+                      .join("")}
+                  </div>`
+                : `<span class="activation-suggest-hint">No suggestions yet. Fetch recent PRs/commits.</span>`
+            }
           </div>
           <div class="activation-status">
             <label>
@@ -1177,6 +1205,8 @@ const renderActivation = () => {
 
   const listMarkup = state.onboardings
     .map((item) => {
+      const member = findMemberForOnboarding(item);
+      const github = member?.github_username || "";
       const mini = item.mini_os || {};
       const progressCount = [mini.deliverable_done, mini.share_done].filter(Boolean)
         .length;
@@ -1185,7 +1215,9 @@ const renderActivation = () => {
       return `
         <button class="activation-person ${isActive ? "active" : ""}" type="button" data-action="select-activation" data-id="${item.id}">
           <div class="activation-person-name">${item.name || "New hire"}</div>
-          <div class="activation-person-meta">${item.startDate || "—"}</div>
+          <div class="activation-person-meta">${item.startDate || "—"}${
+        github ? ` · ${github}` : ""
+      }</div>
           <div class="activation-person-progress">${progressLabel}</div>
         </button>
       `;
@@ -1402,6 +1434,62 @@ const init = () => {
       if (!button) return;
       state.activationSelectedId = button.dataset.id;
       renderActivation();
+      return;
+    }
+    if (action === "use-activity") {
+      const card = event.target.closest(".activation-card");
+      if (!card) return;
+      const id = card.dataset.id;
+      const item = state.onboardings.find((entry) => entry.id === id);
+      if (!item) return;
+      const link = actionTarget.dataset.link || "";
+      const type = actionTarget.dataset.type || "";
+      item.mini_os.deliverable_link = link;
+      if (!item.mini_os.deliverable_type && type) {
+        item.mini_os.deliverable_type = type;
+      }
+      saveOnboarding();
+      renderActivation();
+      return;
+    }
+    if (action === "fetch-github") {
+      const card = event.target.closest(".activation-card");
+      if (!card) return;
+      const id = card.dataset.id;
+      const item = state.onboardings.find((entry) => entry.id === id);
+      if (!item) return;
+      const member = findMemberForOnboarding(item);
+      const username = member?.github_username;
+      if (!username) {
+        alert("No GitHub username found for this member.");
+        return;
+      }
+      actionTarget.disabled = true;
+      actionTarget.textContent = "Fetching...";
+      fetch("http://127.0.0.1:8787/github-activity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, days: 14 }),
+      })
+        .then(async (response) => {
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            throw new Error(data.error || "Failed to fetch GitHub activity.");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          item.mini_os.activity_suggestions = data.items || [];
+          saveOnboarding();
+          renderActivation();
+        })
+        .catch((error) => {
+          alert(error.message);
+        })
+        .finally(() => {
+          actionTarget.disabled = false;
+          actionTarget.textContent = "Fetch from GitHub";
+        });
       return;
     }
     if (action !== "analyze-pr") return;

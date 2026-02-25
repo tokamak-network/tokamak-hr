@@ -1,2 +1,3 @@
 team-ops-dashboard/server/.secrets/
+team-ops-dashboard/server/.env
 *.DS_Store
