@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Candidate List · Hiring Intelligence System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <nav class="top-nav">
+          <a class="brand" href="candidate-list.html">
+            <span class="brand-dot"></span>
+            <span>Tokamak HR Lab</span>
+          </a>
+          <div class="nav-actions">
+            <button class="ghost" type="button">Request Demo</button>
+          </div>
+        </nav>
+
+        <div class="category-tabs" role="tablist" aria-label="Hiring Intelligence Pages">
+          <a class="tab active" href="candidate-list.html" role="tab" aria-selected="true">
+            Candidate List
+          </a>
+          <a class="tab" href="interview-builder.html" role="tab" aria-selected="false">
+            Interview Kit
+          </a>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Candidate List</p>
+            <h1>지원자 리스크와 진행 상태를 한 화면에서 관리한다.</h1>
+            <p class="lead">
+              포지션별 지원자 흐름을 통합하고, 면접 결과를 구조화해 리스크 신호까지 함께 확인합니다.
+            </p>
+            <div class="hero-actions">
+              <button class="primary" type="button">Add Candidate</button>
+              <button class="ghost" type="button">Export View</button>
+            </div>
+            <div class="hero-tags">
+              <span>Pipeline visibility</span>
+              <span>Risk signals</span>
+              <span>Structured notes</span>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-title">Today Snapshot</p>
+                <p class="panel-subtitle">Active candidates overview</p>
+              </div>
+              <span class="pill">Live</span>
+            </div>
+            <div class="panel-body">
+              <div class="risk-row">
+                <p>In Process</p>
+                <div class="risk-meter">
+                  <span style="width: 62%"></span>
+                </div>
+                <strong>18</strong>
+              </div>
+              <div class="risk-row">
+                <p>Needs Follow-up</p>
+                <div class="risk-meter">
+                  <span style="width: 38%"></span>
+                </div>
+                <strong>6</strong>
+              </div>
+              <div class="risk-row">
+                <p>High Risk</p>
+                <div class="risk-meter">
+                  <span style="width: 24%"></span>
+                </div>
+                <strong>4</strong>
+              </div>
+              <div class="risk-row">
+                <p>Ready to Offer</p>
+                <div class="risk-meter">
+                  <span style="width: 18%"></span>
+                </div>
+                <strong>3</strong>
+              </div>
+            </div>
+            <div class="panel-footer">
+              <div>
+                <p class="panel-label">Pipeline health</p>
+                <p class="panel-value">Stable</p>
+              </div>
+              <button class="ghost" type="button">Open Dashboard</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="modules">
+        <div class="section-title">
+          <p class="eyebrow">Intake</p>
+          <h2>하이브리드 지원자 등록</h2>
+        </div>
+        <div class="module-grid">
+          <article class="module-card">
+            <div class="module-header">
+              <h3>빠른 입력</h3>
+              <span>Manual-first</span>
+            </div>
+            <form class="form-grid" autocomplete="off">
+              <div class="form-field">
+                <label for="candidateName">Name</label>
+                <input id="candidateName" type="text" placeholder="e.g. Minji Park" />
+              </div>
+              <div class="form-field">
+                <label for="candidateRole">Role</label>
+                <input id="candidateRole" type="text" placeholder="e.g. Senior Backend Engineer" />
+              </div>
+              <div class="form-field">
+                <label for="candidateStage">Stage</label>
+                <select id="candidateStage">
+                  <option value="screen">Screen</option>
+                  <option value="interview">Interview</option>
+                  <option value="challenge">Challenge</option>
+                  <option value="final">Final</option>
+                  <option value="offer">Offer</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="candidateOwner">Owner</label>
+                <input id="candidateOwner" type="text" placeholder="e.g. Irene" />
+              </div>
+              <div class="form-field">
+                <label for="candidateRisk">Risk Band</label>
+                <select id="candidateRisk">
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="candidateNext">Next Action</label>
+                <input id="candidateNext" type="text" placeholder="e.g. Feedback reflection task" />
+              </div>
+              <button class="primary" type="button" id="addCandidateButton">Add Candidate</button>
+            </form>
+          </article>
+
+          <article class="module-card">
+            <div class="module-header">
+              <h3>이력서 업로드</h3>
+              <span>Resume-assist</span>
+            </div>
+            <div class="upload-card" id="resumeDropZone">
+              <div>
+                <p class="upload-title">Drag & drop resume</p>
+                <p class="upload-subtitle">MD 권장 · PDF, DOCX, TXT 지원</p>
+              </div>
+              <input id="resumeInput" type="file" accept=".md,.pdf,.doc,.docx,.txt" hidden />
+              <button class="ghost" type="button" id="resumeSelectButton">Select File</button>
+            </div>
+            <div class="upload-preview">
+              <div>
+                <p class="preview-title" id="uploadStatus">Auto-extracted summary</p>
+                <p class="preview-text" id="previewRole">Role, tenure, key claims, metrics will be parsed.</p>
+                <ul class="preview-list" id="previewClaims"></ul>
+                <ul class="preview-list" id="previewMissing"></ul>
+                <ul class="preview-list" id="previewDebug"></ul>
+              </div>
+              <button class="primary" type="button" id="reviewSaveButton">Review & Save</button>
+            </div>
+            <p class="muted-note">Markdown(.md) 권장: 추출 정확도 최상. 자동 추출 결과는 저장 전에 반드시 확인합니다.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="directory">
+        <div class="directory-header">
+          <h2>Active Candidates</h2>
+          <p>면접 단계, 리스크 신호, 다음 액션을 동시에 관리합니다.</p>
+        </div>
+        <div class="directory-grid">
+          <div class="directory-main">
+            <section class="controls">
+              <div class="search">
+                <label for="searchInput">Search</label>
+                <input
+                  id="searchInput"
+                  type="search"
+                  placeholder="Name, role, stage..."
+                  autocomplete="off"
+                />
+              </div>
+              <div class="filters">
+                <label for="stageFilter">Stage</label>
+                <select id="stageFilter">
+                  <option value="all">All</option>
+                  <option value="screen">Screen</option>
+                  <option value="interview">Interview</option>
+                  <option value="challenge">Challenge</option>
+                  <option value="final">Final</option>
+                  <option value="offer">Offer</option>
+                </select>
+                <label for="riskFilter">Risk</label>
+                <select id="riskFilter">
+                  <option value="all">All</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </section>
+
+            <section class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Stage</th>
+                    <th>Applied Date</th>
+                    <th>Risk Band</th>
+                    <th>Next Action</th>
+                    <th>Nationality</th>
+                    <th>Email</th>
+                    <th>GitHub</th>
+                    <th>Resume</th>
+                  </tr>
+                </thead>
+                <tbody id="candidateTable">
+                  <tr data-candidate>
+                    <td><button class="name-link" type="button">Minji Park</button></td>
+                    <td>Senior Backend Engineer</td>
+                    <td>Interview 2</td>
+                    <td>Feb 20, 2026</td>
+                    <td><span class="chip medium">Medium</span></td>
+                    <td>Feedback reflection task</td>
+                    <td>Korea</td>
+                    <td>minji.park@example.com</td>
+                    <td><a class="table-link" href="https://github.com/minjipark" target="_blank" rel="noopener">@minjipark</a></td>
+                    <td><a class="table-link" href="#">Resume</a></td>
+                  </tr>
+                  <tr data-candidate>
+                    <td><button class="name-link" type="button">Aron Kim</button></td>
+                    <td>Research Scientist</td>
+                    <td>Challenge</td>
+                    <td>Feb 18, 2026</td>
+                    <td><span class="chip high">High</span></td>
+                    <td>Risk probes on execution</td>
+                    <td>USA</td>
+                    <td>aron.kim@example.com</td>
+                    <td><a class="table-link" href="https://github.com/aronkim" target="_blank" rel="noopener">@aronkim</a></td>
+                    <td><a class="table-link" href="#">Resume</a></td>
+                  </tr>
+                  <tr data-candidate>
+                    <td><button class="name-link" type="button">Sana Lee</button></td>
+                    <td>People Ops</td>
+                    <td>Final</td>
+                    <td>Feb 12, 2026</td>
+                    <td><span class="chip low">Low</span></td>
+                    <td>Offer prep</td>
+                    <td>Japan</td>
+                    <td>sana.lee@example.com</td>
+                    <td><a class="table-link" href="https://github.com/sanalee" target="_blank" rel="noopener">@sanalee</a></td>
+                    <td><a class="table-link" href="#">Resume</a></td>
+                  </tr>
+                  <tr data-candidate>
+                    <td><button class="name-link" type="button">Daniel Cho</button></td>
+                    <td>Frontend Engineer</td>
+                    <td>Interview 1</td>
+                    <td>Feb 10, 2026</td>
+                    <td><span class="chip medium">Medium</span></td>
+                    <td>Resume claim validation</td>
+                    <td>Canada</td>
+                    <td>daniel.cho@example.com</td>
+                    <td><a class="table-link" href="https://github.com/danielcho" target="_blank" rel="noopener">@danielcho</a></td>
+                    <td><a class="table-link" href="#">Resume</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div>
+          <h2>지원자 흐름과 리스크를 한 번에 관리</h2>
+          <p>다음 라운드에서 필요한 질문과 액션을 자동으로 연결합니다.</p>
+        </div>
+        <button class="primary" type="button">Connect Interview Kit</button>
+      </section>
+
+      <footer class="footer">
+        <p>Hiring Intelligence System · Candidate List</p>
+      </footer>
+    </div>
+    <div class="modal" id="editModal" aria-hidden="true">
+      <div class="modal-overlay" id="editModalOverlay"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+        <div class="edit-header">
+          <div>
+            <p class="eyebrow">Candidate Detail</p>
+            <h3 id="editTitle">선택한 지원자를 수정</h3>
+          </div>
+          <button class="ghost" type="button" id="editClearButton">Close</button>
+        </div>
+        <form class="form-grid" autocomplete="off" id="editForm">
+          <div class="form-field">
+            <label for="editName">Name</label>
+            <input id="editName" type="text" placeholder="Select a row" />
+          </div>
+          <div class="form-field">
+            <label for="editRole">Role</label>
+            <input id="editRole" type="text" />
+          </div>
+          <div class="form-field">
+            <label for="editStage">Stage</label>
+            <select id="editStage">
+              <option value="screen">Screen</option>
+              <option value="interview">Interview</option>
+              <option value="challenge">Challenge</option>
+              <option value="final">Final</option>
+              <option value="offer">Offer</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="editApplied">Applied Date</label>
+            <input id="editApplied" type="date" />
+          </div>
+          <div class="form-field">
+            <label for="editRisk">Risk Band</label>
+            <select id="editRisk">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label for="editNext">Next Action</label>
+            <input id="editNext" type="text" />
+          </div>
+          <div class="form-field">
+            <label for="editNationality">Nationality</label>
+            <input id="editNationality" type="text" />
+          </div>
+          <div class="form-field">
+            <label for="editEmail">Email</label>
+            <input id="editEmail" type="email" />
+          </div>
+          <div class="form-field">
+            <label for="editGithub">GitHub</label>
+            <input id="editGithub" type="text" placeholder="https://github.com/handle" />
+          </div>
+          <div class="form-field">
+            <label for="editResume">Resume URL</label>
+            <input id="editResume" type="url" placeholder="https://..." />
+          </div>
+          <div class="edit-actions">
+            <button class="primary" type="button" id="editSaveButton">Save Changes</button>
+            <button class="ghost" type="button" id="editDeleteButton">Delete</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+    <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
+    <script src="https://unpkg.com/tesseract.js@5.0.4/dist/tesseract.min.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
