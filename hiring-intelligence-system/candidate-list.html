@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
@@ -29,7 +29,7 @@
           <a class="tab active" href="candidate-list.html" role="tab" aria-selected="true">
             Candidate List
           </a>
-          <a class="tab" href="interview-builder.html" role="tab" aria-selected="false">
+          <a class="tab" href="interview-kit.html" role="tab" aria-selected="false">
             Interview Kit
           </a>
         </div>
@@ -104,65 +104,25 @@
       <section class="modules">
         <div class="section-title">
           <p class="eyebrow">Intake</p>
-          <h2>하이브리드 지원자 등록</h2>
+          <h2>Hybrid Candidate Intake</h2>
         </div>
         <div class="module-grid">
           <article class="module-card">
             <div class="module-header">
-              <h3>빠른 입력</h3>
-              <span>Manual-first</span>
-            </div>
-            <form class="form-grid" autocomplete="off">
-              <div class="form-field">
-                <label for="candidateName">Name</label>
-                <input id="candidateName" type="text" placeholder="e.g. Minji Park" />
-              </div>
-              <div class="form-field">
-                <label for="candidateRole">Role</label>
-                <input id="candidateRole" type="text" placeholder="e.g. Senior Backend Engineer" />
-              </div>
-              <div class="form-field">
-                <label for="candidateStage">Stage</label>
-                <select id="candidateStage">
-                  <option value="screen">Screen</option>
-                  <option value="interview">Interview</option>
-                  <option value="challenge">Challenge</option>
-                  <option value="final">Final</option>
-                  <option value="offer">Offer</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label for="candidateOwner">Owner</label>
-                <input id="candidateOwner" type="text" placeholder="e.g. Irene" />
-              </div>
-              <div class="form-field">
-                <label for="candidateRisk">Risk Band</label>
-                <select id="candidateRisk">
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-              </div>
-              <div class="form-field">
-                <label for="candidateNext">Next Action</label>
-                <input id="candidateNext" type="text" placeholder="e.g. Feedback reflection task" />
-              </div>
-              <button class="primary" type="button" id="addCandidateButton">Add Candidate</button>
-            </form>
-          </article>
-
-          <article class="module-card">
-            <div class="module-header">
-              <h3>이력서 업로드</h3>
+              <h3>Resume Upload</h3>
               <span>Resume-assist</span>
             </div>
             <div class="upload-card" id="resumeDropZone">
               <div>
                 <p class="upload-title">Drag & drop resume</p>
-                <p class="upload-subtitle">MD 권장 · PDF, DOCX, TXT 지원</p>
+                <p class="upload-subtitle">MD recommended · Supports PDF, DOCX, TXT</p>
               </div>
               <input id="resumeInput" type="file" accept=".md,.pdf,.doc,.docx,.txt" hidden />
-              <button class="ghost" type="button" id="resumeSelectButton">Select File</button>
+              <button class="primary" type="button" id="resumeSelectButton">Select File</button>
+            </div>
+            <div class="upload-actions">
+              <button class="ghost" type="button" id="llmSettingsButton">LLM Settings</button>
+              <span class="upload-tag">Auto-saved</span>
             </div>
             <div class="upload-preview">
               <div>
@@ -172,9 +132,8 @@
                 <ul class="preview-list" id="previewMissing"></ul>
                 <ul class="preview-list" id="previewDebug"></ul>
               </div>
-              <button class="primary" type="button" id="reviewSaveButton">Review & Save</button>
             </div>
-            <p class="muted-note">Markdown(.md) 권장: 추출 정확도 최상. 자동 추출 결과는 저장 전에 반드시 확인합니다.</p>
+            <p class="muted-note">Markdown (.md) recommended for best extraction accuracy. Always review before saving.</p>
           </article>
         </div>
       </section>
@@ -197,15 +156,17 @@
                 />
               </div>
               <div class="filters">
-                <label for="stageFilter">Stage</label>
-                <select id="stageFilter">
-                  <option value="all">All</option>
-                  <option value="screen">Screen</option>
-                  <option value="interview">Interview</option>
-                  <option value="challenge">Challenge</option>
-                  <option value="final">Final</option>
-                  <option value="offer">Offer</option>
-                </select>
+            <label for="stageFilter">Stage</label>
+            <select id="stageFilter">
+              <option value="all">All</option>
+              <option value="screen">Screen</option>
+              <option value="interview 1">Interview 1</option>
+              <option value="interview 2">Interview 2</option>
+              <option value="interview 3">Interview 3</option>
+              <option value="pass">PASS</option>
+              <option value="fail">FAIL</option>
+              <option value="offer">Offer</option>
+            </select>
                 <label for="riskFilter">Risk</label>
                 <select id="riskFilter">
                   <option value="all">All</option>
@@ -220,6 +181,7 @@
               <table>
                 <thead>
                   <tr>
+                    <th>No</th>
                     <th>Name</th>
                     <th>Role</th>
                     <th>Stage</th>
@@ -230,10 +192,12 @@
                     <th>Email</th>
                     <th>GitHub</th>
                     <th>Resume</th>
+                    <th>Summary</th>
                   </tr>
                 </thead>
                 <tbody id="candidateTable">
                   <tr data-candidate>
+                    <td>1</td>
                     <td><button class="name-link" type="button">Minji Park</button></td>
                     <td>Senior Backend Engineer</td>
                     <td>Interview 2</td>
@@ -244,8 +208,10 @@
                     <td>minji.park@example.com</td>
                     <td><a class="table-link" href="https://github.com/minjipark" target="_blank" rel="noopener">@minjipark</a></td>
                     <td><a class="table-link" href="#">Resume</a></td>
+                    <td><button class="summary-link" type="button">View</button></td>
                   </tr>
                   <tr data-candidate>
+                    <td>2</td>
                     <td><button class="name-link" type="button">Aron Kim</button></td>
                     <td>Research Scientist</td>
                     <td>Challenge</td>
@@ -256,8 +222,10 @@
                     <td>aron.kim@example.com</td>
                     <td><a class="table-link" href="https://github.com/aronkim" target="_blank" rel="noopener">@aronkim</a></td>
                     <td><a class="table-link" href="#">Resume</a></td>
+                    <td><button class="summary-link" type="button">View</button></td>
                   </tr>
                   <tr data-candidate>
+                    <td>3</td>
                     <td><button class="name-link" type="button">Sana Lee</button></td>
                     <td>People Ops</td>
                     <td>Final</td>
@@ -268,8 +236,10 @@
                     <td>sana.lee@example.com</td>
                     <td><a class="table-link" href="https://github.com/sanalee" target="_blank" rel="noopener">@sanalee</a></td>
                     <td><a class="table-link" href="#">Resume</a></td>
+                    <td><button class="summary-link" type="button">View</button></td>
                   </tr>
                   <tr data-candidate>
+                    <td>4</td>
                     <td><button class="name-link" type="button">Daniel Cho</button></td>
                     <td>Frontend Engineer</td>
                     <td>Interview 1</td>
@@ -280,6 +250,7 @@
                     <td>daniel.cho@example.com</td>
                     <td><a class="table-link" href="https://github.com/danielcho" target="_blank" rel="noopener">@danielcho</a></td>
                     <td><a class="table-link" href="#">Resume</a></td>
+                    <td><button class="summary-link" type="button">View</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -293,7 +264,7 @@
           <h2>지원자 흐름과 리스크를 한 번에 관리</h2>
           <p>다음 라운드에서 필요한 질문과 액션을 자동으로 연결합니다.</p>
         </div>
-        <button class="primary" type="button">Connect Interview Kit</button>
+        <a class="primary" href="interview-kit.html">Connect Interview Kit</a>
       </section>
 
       <footer class="footer">
@@ -323,9 +294,11 @@
             <label for="editStage">Stage</label>
             <select id="editStage">
               <option value="screen">Screen</option>
-              <option value="interview">Interview</option>
-              <option value="challenge">Challenge</option>
-              <option value="final">Final</option>
+              <option value="interview 1">Interview 1</option>
+              <option value="interview 2">Interview 2</option>
+              <option value="interview 3">Interview 3</option>
+              <option value="pass">PASS</option>
+              <option value="fail">FAIL</option>
               <option value="offer">Offer</option>
             </select>
           </div>
@@ -366,6 +339,54 @@
             <button class="ghost" type="button" id="editDeleteButton">Delete</button>
           </div>
         </form>
+      </div>
+    </div>
+    <div class="modal" id="summaryModal" aria-hidden="true">
+      <div class="modal-overlay" id="summaryModalOverlay"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="summaryTitle">
+        <div class="edit-header">
+          <div>
+            <p class="eyebrow">Summary</p>
+            <h3 id="summaryTitle">Resume Highlights</h3>
+          </div>
+          <button class="ghost" type="button" id="summaryCloseButton">Close</button>
+        </div>
+        <div class="summary-box" id="summaryContent"></div>
+      </div>
+    </div>
+    <div class="modal" id="llmModal" aria-hidden="true">
+      <div class="modal-overlay" id="llmModalOverlay"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="llmTitle">
+        <div class="edit-header">
+          <div>
+            <p class="eyebrow">LLM Settings</p>
+            <h3 id="llmTitle">Internal LLM API</h3>
+          </div>
+          <button class="ghost" type="button" id="llmCloseButton">Close</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="llmUrl">API URL</label>
+            <input id="llmUrl" type="url" placeholder="https://chat.ai.tokamak.network/api/chat/completions" />
+          </div>
+          <div class="form-field">
+            <label for="llmToken">Bearer Token</label>
+            <input id="llmToken" type="password" placeholder="Bearer token" />
+          </div>
+          <div class="form-field">
+            <label for="llmModel">Model</label>
+            <input id="llmModel" type="text" placeholder="gpt-5.2" />
+          </div>
+          <div class="form-field">
+            <label for="llmChatId">Chat ID</label>
+            <input id="llmChatId" type="text" placeholder="Optional" />
+          </div>
+          <div class="form-field">
+            <label for="llmSessionId">Session ID</label>
+            <input id="llmSessionId" type="text" placeholder="Optional" />
+          </div>
+          <button class="primary" type="button" id="llmSaveButton">Save Settings</button>
+        </div>
       </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>

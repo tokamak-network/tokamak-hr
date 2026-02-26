@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interview Kit · Hiring Intelligence System</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="page">
+      <header class="hero">
+        <nav class="top-nav">
+          <a class="brand" href="candidate-list.html">
+            <span class="brand-dot"></span>
+            <span>Tokamak HR Lab</span>
+          </a>
+          <div class="nav-actions">
+            <a class="ghost" href="candidate-list.html">Candidate List</a>
+            <a class="ghost active" href="interview-kit.html">Interview Kit</a>
+          </div>
+        </nav>
+
+        <div class="category-tabs" role="tablist" aria-label="Hiring Intelligence Pages">
+          <a class="tab" href="candidate-list.html" role="tab" aria-selected="false">
+            Candidate List
+          </a>
+          <a class="tab active" href="interview-kit.html" role="tab" aria-selected="true">
+            Interview Kit
+          </a>
+        </div>
+
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Interview Kit</p>
+            <h1>지원자별 맞춤 질문 키트를 자동 생성한다.</h1>
+            <p class="lead">
+              이력서 기반 검증 질문, 역할별 심층 질문, 인성·문화 질문을 한 번에 구성합니다.
+              Candidate List와 연결해 클릭 한 번으로 질문 세트를 확인하세요.
+            </p>
+            <div class="hero-tags">
+              <span>Resume-based probes</span>
+              <span>Role depth ladder</span>
+              <span>Culture & risk</span>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="panel-header">
+              <div>
+                <p class="panel-title">Selected Candidate</p>
+                <p class="panel-subtitle" id="kitSubtitle">Choose a candidate to generate.</p>
+              </div>
+              <span class="pill">Auto-generated</span>
+            </div>
+            <div class="panel-body" id="kitSummary">
+              <div class="risk-row">
+                <p>Resume probes</p>
+                <div class="risk-meter"><span style="width: 72%"></span></div>
+                <strong>12 Qs</strong>
+              </div>
+              <div class="risk-row">
+                <p>Role depth</p>
+                <div class="risk-meter"><span style="width: 64%"></span></div>
+                <strong>8 Qs</strong>
+              </div>
+              <div class="risk-row">
+                <p>Culture fit</p>
+                <div class="risk-meter"><span style="width: 48%"></span></div>
+                <strong>6 Qs</strong>
+              </div>
+            </div>
+            <div class="panel-footer">
+              <div>
+                <p class="panel-label">Kit status</p>
+                <p class="panel-value" id="kitStatus">Waiting</p>
+              </div>
+              <button class="ghost" type="button" id="copyKitButton">Copy Questions</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="directory">
+        <div class="directory-header">
+          <h2>Candidate Interview Kits</h2>
+          <p>지원자를 선택하면 질문 세트가 오른쪽에 생성됩니다.</p>
+        </div>
+
+        <div class="kit-strip" id="candidateList"></div>
+
+        <div class="kit-grid">
+          <div class="kit-main">
+            <section class="kit-panel" id="kitSummaryPanel">
+              <div class="kit-empty">
+                <h3>지원자를 선택하세요</h3>
+                <p>상단 목록에서 지원자를 선택하면 요약과 질문이 표시됩니다.</p>
+              </div>
+            </section>
+
+            <section class="kit-panel" id="kitPanel">
+              <div class="kit-empty">
+                <h3>질문 키트</h3>
+                <p>지원자 선택 후 질문 세트가 생성됩니다.</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <p>Hiring Intelligence System · Interview Kit</p>
+      </footer>
+    </div>
+    <script src="interview-kit.js"></script>
+  </body>
+</html>

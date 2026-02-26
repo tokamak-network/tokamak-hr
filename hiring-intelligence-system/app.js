@@ -1,20 +1,4 @@
-const formState = {
-  name: "",
-  role: "",
-  stage: "screen",
-  owner: "",
-  risk: "low",
-  nextAction: "",
-};
-
 const selectors = {
-  name: "#candidateName",
-  role: "#candidateRole",
-  stage: "#candidateStage",
-  owner: "#candidateOwner",
-  risk: "#candidateRisk",
-  nextAction: "#candidateNext",
-  addButton: "#addCandidateButton",
   tableBody: "#candidateTable",
   uploadInput: "#resumeInput",
   uploadSelectButton: "#resumeSelectButton",
@@ -24,7 +8,6 @@ const selectors = {
   previewClaims: "#previewClaims",
   previewMissing: "#previewMissing",
   previewDebug: "#previewDebug",
-  reviewButton: "#reviewSaveButton",
   editForm: "#editForm",
   editTitle: "#editTitle",
   editClear: "#editClearButton",
@@ -32,6 +15,20 @@ const selectors = {
   editDelete: "#editDeleteButton",
   editModal: "#editModal",
   editModalOverlay: "#editModalOverlay",
+  summaryModal: "#summaryModal",
+  summaryOverlay: "#summaryModalOverlay",
+  summaryClose: "#summaryCloseButton",
+  summaryContent: "#summaryContent",
+  llmButton: "#llmSettingsButton",
+  llmModal: "#llmModal",
+  llmOverlay: "#llmModalOverlay",
+  llmClose: "#llmCloseButton",
+  llmSave: "#llmSaveButton",
+  llmUrl: "#llmUrl",
+  llmToken: "#llmToken",
+  llmModel: "#llmModel",
+  llmChatId: "#llmChatId",
+  llmSessionId: "#llmSessionId",
   editName: "#editName",
   editRole: "#editRole",
   editStage: "#editStage",
@@ -46,6 +43,7 @@ const selectors = {
 
 let selectedRow = null;
 const storageKey = "hiringIntelligenceCandidates";
+const llmSettingsKey = "hiringIntelligenceLlmSettings";
 
 const openModal = () => {
   const modal = document.querySelector(selectors.editModal);
@@ -63,21 +61,184 @@ const closeModal = () => {
   }
 };
 
+const openLlmModal = () => {
+  const modal = document.querySelector(selectors.llmModal);
+  if (modal) {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  }
+};
+
+const closeLlmModal = () => {
+  const modal = document.querySelector(selectors.llmModal);
+  if (modal) {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+};
+
+const defaultLlmSettings = {
+  url: "https://chat.ai.tokamak.network/api/chat/completions",
+  model: "gpt-5.2",
+  token: "",
+  chatId: "",
+  sessionId: "",
+};
+
+const loadLlmSettings = () => {
+  const raw = localStorage.getItem(llmSettingsKey);
+  if (!raw) return { ...defaultLlmSettings };
+  try {
+    return { ...defaultLlmSettings, ...JSON.parse(raw) };
+  } catch {
+    return { ...defaultLlmSettings };
+  }
+};
+
+const saveLlmSettings = (settings) => {
+  localStorage.setItem(llmSettingsKey, JSON.stringify(settings));
+};
+
+const hydrateLlmSettings = () => {
+  const settings = loadLlmSettings();
+  if (!settings) return;
+  const urlInput = document.querySelector(selectors.llmUrl);
+  const tokenInput = document.querySelector(selectors.llmToken);
+  const modelInput = document.querySelector(selectors.llmModel);
+  const chatIdInput = document.querySelector(selectors.llmChatId);
+  const sessionIdInput = document.querySelector(selectors.llmSessionId);
+  if (urlInput) urlInput.value = settings.url || "";
+  if (tokenInput) tokenInput.value = settings.token || "";
+  if (modelInput) modelInput.value = settings.model || "gpt-5.2";
+  if (chatIdInput) chatIdInput.value = settings.chatId || "";
+  if (sessionIdInput) sessionIdInput.value = settings.sessionId || "";
+};
+
+const extractAssistantContent = (data) => {
+  if (!data) return "";
+  const direct =
+    data?.choices?.[0]?.message?.content ||
+    data?.choices?.[0]?.delta?.content ||
+    data?.content;
+  if (direct) return String(direct).trim();
+  const messages = data?.messages || data?.data?.messages;
+  if (Array.isArray(messages)) {
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+      const message = messages[i];
+      if (message?.role === "assistant" && message?.content) {
+        return String(message.content).trim();
+      }
+    }
+  }
+  return "";
+};
+
+const buildCompletedUrl = (url) => {
+  if (!url) return "";
+  if (url.includes("/completed")) return url;
+  if (url.includes("/completions")) return url.replace(/\/completions(\?.*)?$/, "/completed");
+  return `${url.replace(/\/$/, "")}/completed`;
+};
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const requestSummaryFromLlm = async (text) => {
+  const settings = loadLlmSettings();
+  if (!settings || !settings.url || !settings.token) return null;
+
+  const payload = {
+    stream: false,
+    model: settings.model || "gpt-5.2",
+    chat_id: settings.chatId || undefined,
+    session_id: settings.sessionId || undefined,
+    messages: [
+      {
+        role: "user",
+        content:
+          "You are an HR analyst. Summarize the resume into:\n" +
+          "1) 핵심 경력 요약\n2) 회사별 주요 업무 및 성과\n3) 개인 프로젝트\n4) 핵심 기술 스택\n5) 강점 요약\n6) 한줄 요약.\n" +
+          "Respond in Korean, concise bullet points.\n\nResume:\n" +
+          text,
+      },
+    ],
+    params: {},
+    tool_servers: [],
+    features: {
+      voice: false,
+      image_generation: false,
+      code_interpreter: false,
+      web_search: false,
+    },
+    variables: {},
+  };
+
+  const response = await fetch(settings.url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${settings.token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) return null;
+  const data = await response.json();
+  const directContent = extractAssistantContent(data);
+  if (directContent) return directContent;
+
+  const taskId = data?.task_id;
+  if (!taskId) return null;
+
+  const completedUrl = buildCompletedUrl(settings.url);
+  const completedPayload = {
+    task_id: taskId,
+    chat_id: settings.chatId || undefined,
+    session_id: settings.sessionId || undefined,
+    model: settings.model || "gpt-5.2",
+  };
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    await wait(1000);
+    const completedResponse = await fetch(completedUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${settings.token}`,
+      },
+      body: JSON.stringify(completedPayload),
+    });
+    if (!completedResponse.ok) continue;
+    const completedData = await completedResponse.json();
+    const completedContent = extractAssistantContent(completedData);
+    if (completedContent) return completedContent;
+  }
+
+  return null;
+};
+
+const openSummaryModal = (content) => {
+  const modal = document.querySelector(selectors.summaryModal);
+  const box = document.querySelector(selectors.summaryContent);
+  if (box) box.textContent = content || "추출된 요약이 없습니다.";
+  if (modal) {
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  }
+};
+
+const closeSummaryModal = () => {
+  const modal = document.querySelector(selectors.summaryModal);
+  if (modal) {
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+};
+
 if (window.pdfjsLib) {
   window.pdfjsLib.GlobalWorkerOptions.workerSrc =
     "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js";
 }
 
-const getValue = (selector) => document.querySelector(selector)?.value?.trim() || "";
-
-const updateFormState = () => {
-  formState.name = getValue(selectors.name);
-  formState.role = getValue(selectors.role);
-  formState.stage = document.querySelector(selectors.stage)?.value || "screen";
-  formState.owner = getValue(selectors.owner);
-  formState.risk = document.querySelector(selectors.risk)?.value || "low";
-  formState.nextAction = getValue(selectors.nextAction);
-};
 
 const addCandidateRow = ({
   name,
@@ -89,15 +250,20 @@ const addCandidateRow = ({
   nationality,
   email,
   github,
+  summary,
   resumeUrl,
   id,
+  rowIndex,
 }) => {
   const tableBody = document.querySelector(selectors.tableBody);
   if (!tableBody) return;
   const row = document.createElement("tr");
   row.setAttribute("data-candidate", "");
   row.dataset.id = id || createId();
+  row.dataset.summary = summary || "";
+  const displayIndex = rowIndex || tableBody.querySelectorAll("tr[data-candidate]").length + 1;
   row.innerHTML = `
+    <td>${displayIndex}</td>
     <td><button class="name-link" type="button">${name}</button></td>
     <td>${role}</td>
     <td>${stage}</td>
@@ -108,9 +274,13 @@ const addCandidateRow = ({
     <td>${email}</td>
     <td>${github ? `<a class="table-link" href="${github}" target="_blank" rel="noopener">${github.replace("https://github.com/", "@")} </a>` : "—"}</td>
     <td>${resumeUrl ? `<a class="table-link" href="${resumeUrl}" target="_blank" rel="noopener">Resume</a>` : "—"}</td>
+    <td><button class="summary-link" type="button">${summary ? "View" : "Add"}</button></td>
   `;
-  tableBody.prepend(row);
+  tableBody.append(row);
+  return row;
 };
+
+const normalizeName = (value) => value.toLowerCase().replace(/\s+/g, " ").trim();
 
 const createId = () => {
   if (window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -119,29 +289,21 @@ const createId = () => {
 
 const capitalize = (text) => text.charAt(0).toUpperCase() + text.slice(1);
 
-const resetForm = () => {
-  document.querySelector(selectors.name).value = "";
-  document.querySelector(selectors.role).value = "";
-  document.querySelector(selectors.stage).value = "screen";
-  document.querySelector(selectors.owner).value = "";
-  document.querySelector(selectors.risk).value = "low";
-  document.querySelector(selectors.nextAction).value = "";
-};
-
 const parseRow = (row) => {
   const cells = row.querySelectorAll("td");
   return {
     id: row.dataset.id || createId(),
-    name: cells[0]?.textContent?.trim() || "",
-    role: cells[1]?.textContent?.trim() || "",
-    stage: cells[2]?.textContent?.trim() || "screen",
-    appliedDate: cells[3]?.textContent?.trim() || "",
-    risk: cells[4]?.textContent?.trim().toLowerCase() || "low",
-    nextAction: cells[5]?.textContent?.trim() || "",
-    nationality: cells[6]?.textContent?.trim() || "",
-    email: cells[7]?.textContent?.trim() || "",
-    github: cells[8]?.querySelector("a")?.getAttribute("href") || "",
-    resume: cells[9]?.querySelector("a")?.getAttribute("href") || "",
+    name: cells[1]?.querySelector(".name-link")?.textContent?.trim() || cells[1]?.textContent?.trim() || "",
+    role: cells[2]?.textContent?.trim() || "",
+    stage: cells[3]?.textContent?.trim() || "screen",
+    appliedDate: cells[4]?.textContent?.trim() || "",
+    risk: cells[5]?.textContent?.trim().toLowerCase() || "low",
+    nextAction: cells[6]?.textContent?.trim() || "",
+    nationality: cells[7]?.textContent?.trim() || "",
+    email: cells[8]?.textContent?.trim() || "",
+    github: cells[9]?.querySelector("a")?.getAttribute("href") || "",
+    summary: row.dataset.summary || "",
+    resume: cells[10]?.querySelector("a")?.getAttribute("href") || "",
   };
 };
 
@@ -153,11 +315,26 @@ const saveCandidatesFromTable = () => {
   localStorage.setItem(storageKey, JSON.stringify(data));
 };
 
+const saveAndFilter = () => {
+  saveCandidatesFromTable();
+  refreshRowNumbers();
+};
+
+const refreshRowNumbers = () => {
+  const tableBody = document.querySelector(selectors.tableBody);
+  if (!tableBody) return;
+  const rows = Array.from(tableBody.querySelectorAll("tr[data-candidate]"));
+  rows.forEach((row, index) => {
+    const cell = row.querySelector("td");
+    if (cell) cell.textContent = String(index + 1);
+  });
+};
+
 const renderCandidates = (candidates) => {
   const tableBody = document.querySelector(selectors.tableBody);
   if (!tableBody) return;
   tableBody.innerHTML = "";
-  candidates.forEach((candidate) => {
+  candidates.forEach((candidate, index) => {
     addCandidateRow({
       id: candidate.id,
       name: candidate.name,
@@ -169,7 +346,9 @@ const renderCandidates = (candidates) => {
       nationality: candidate.nationality,
       email: candidate.email,
       github: candidate.github,
+      summary: candidate.summary,
       resumeUrl: candidate.resume,
+      rowIndex: index + 1,
     });
   });
 };
@@ -189,12 +368,17 @@ const hydrateCandidates = () => {
 };
 
 const populateEditForm = (data) => {
+  if (!data) return;
   document.querySelector(selectors.editName).value = data.name;
   document.querySelector(selectors.editRole).value = data.role;
   document.querySelector(selectors.editStage).value = data.stage.toLowerCase();
-  document.querySelector(selectors.editApplied).value = data.appliedDate
-    ? new Date(data.appliedDate).toISOString().slice(0, 10)
-    : "";
+  const appliedInput = document.querySelector(selectors.editApplied);
+  if (appliedInput) {
+    const parsed = data.appliedDate ? new Date(data.appliedDate) : null;
+    appliedInput.value = parsed && !Number.isNaN(parsed.valueOf())
+      ? parsed.toISOString().slice(0, 10)
+      : "";
+  }
   document.querySelector(selectors.editRisk).value = data.risk;
   document.querySelector(selectors.editNext).value = data.nextAction;
   document.querySelector(selectors.editNationality).value = data.nationality;
@@ -225,25 +409,26 @@ const updateRowFromForm = () => {
   const github = document.querySelector(selectors.editGithub).value.trim();
   const resume = document.querySelector(selectors.editResume).value.trim();
 
-  cells[0].textContent = name || "—";
-  cells[1].textContent = role || "—";
-  cells[2].textContent = stage;
-  cells[3].textContent = applied ? new Date(applied).toLocaleDateString("en-US", {
+  cells[1].innerHTML = `<button class="name-link" type="button">${name || "—"}</button>`;
+  cells[2].textContent = role || "—";
+  cells[3].textContent = stage;
+  cells[4].textContent = applied ? new Date(applied).toLocaleDateString("en-US", {
     month: "short",
     day: "2-digit",
     year: "numeric",
   }) : "—";
-  cells[4].innerHTML = `<span class="chip ${risk}">${capitalize(risk)}</span>`;
-  cells[5].textContent = nextAction || "—";
-  cells[6].textContent = nationality || "—";
-  cells[7].textContent = email || "—";
-  cells[8].innerHTML = github
+  cells[5].innerHTML = `<span class="chip ${risk}">${capitalize(risk)}</span>`;
+  cells[6].textContent = nextAction || "—";
+  cells[7].textContent = nationality || "—";
+  cells[8].textContent = email || "—";
+  cells[9].innerHTML = github
     ? `<a class="table-link" href="${github}" target="_blank" rel="noopener">${github.replace("https://github.com/", "@")} </a>`
     : "—";
-  cells[9].innerHTML = resume
+  cells[10].innerHTML = resume
     ? `<a class="table-link" href="${resume}" target="_blank" rel="noopener">Resume</a>`
     : "—";
-  saveCandidatesFromTable();
+  cells[11].innerHTML = `<button class="summary-link" type="button">${selectedRow.dataset.summary ? "View" : "Add"}</button>`;
+  saveAndFilter();
   closeModal();
 };
 
@@ -251,7 +436,7 @@ const deleteSelectedRow = () => {
   if (!selectedRow) return;
   selectedRow.remove();
   clearEditForm();
-  saveCandidatesFromTable();
+  saveAndFilter();
 };
 
 const setupRowSelection = () => {
@@ -259,9 +444,15 @@ const setupRowSelection = () => {
   if (!tableBody) return;
   tableBody.addEventListener("click", (event) => {
     const nameButton = event.target.closest(".name-link");
-    if (!nameButton) return;
+    const summaryButton = event.target.closest(".summary-link");
+    if (!nameButton && !summaryButton) return;
     const row = event.target.closest("tr[data-candidate]");
     if (!row) return;
+    if (summaryButton) {
+      const summary = row.dataset.summary || "";
+      openSummaryModal(summary);
+      return;
+    }
     selectedRow = row;
     const data = parseRow(row);
     populateEditForm(data);
@@ -274,38 +465,45 @@ const setupEditForm = () => {
   const saveButton = document.querySelector(selectors.editSave);
   const deleteButton = document.querySelector(selectors.editDelete);
   const overlay = document.querySelector(selectors.editModalOverlay);
+  const summaryOverlay = document.querySelector(selectors.summaryOverlay);
+  const summaryClose = document.querySelector(selectors.summaryClose);
+  const llmOverlay = document.querySelector(selectors.llmOverlay);
+  const llmClose = document.querySelector(selectors.llmClose);
+  const llmSave = document.querySelector(selectors.llmSave);
+  const llmButton = document.querySelector(selectors.llmButton);
   if (clearButton) clearButton.addEventListener("click", clearEditForm);
   if (saveButton) saveButton.addEventListener("click", updateRowFromForm);
   if (deleteButton) deleteButton.addEventListener("click", deleteSelectedRow);
   if (overlay) overlay.addEventListener("click", closeModal);
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") closeModal();
+  if (summaryOverlay) summaryOverlay.addEventListener("click", closeSummaryModal);
+  if (summaryClose) summaryClose.addEventListener("click", closeSummaryModal);
+  if (llmOverlay) llmOverlay.addEventListener("click", closeLlmModal);
+  if (llmClose) llmClose.addEventListener("click", closeLlmModal);
+  if (llmButton) llmButton.addEventListener("click", () => {
+    hydrateLlmSettings();
+    openLlmModal();
   });
-};
-
-const handleAddCandidate = () => {
-  updateFormState();
-  if (!formState.name || !formState.role) {
-    alert("Name and Role are required.");
-    return;
+  if (llmSave) {
+    llmSave.addEventListener("click", () => {
+      const url = document.querySelector(selectors.llmUrl)?.value.trim();
+      const token = document.querySelector(selectors.llmToken)?.value.trim();
+      const model = document.querySelector(selectors.llmModel)?.value.trim() || "gpt-5.2";
+      const chatId = document.querySelector(selectors.llmChatId)?.value.trim();
+      const sessionId = document.querySelector(selectors.llmSessionId)?.value.trim();
+      saveLlmSettings({ url, token, model, chatId, sessionId });
+      closeLlmModal();
+    });
   }
-
-  addCandidateRow({
-    name: formState.name,
-    role: formState.role,
-    stage: formState.stage,
-    appliedDate: new Date().toLocaleDateString("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-    }),
-    risk: formState.risk,
-    nextAction: formState.nextAction || "—",
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeModal();
+      closeSummaryModal();
+      closeLlmModal();
+    }
   });
-  saveCandidatesFromTable();
-
-  resetForm();
 };
+
+
 
 const normalizeText = (text) =>
   text
@@ -513,10 +711,7 @@ const updateDebugInfo = (items) => {
     : "";
 };
 
-const fillFormFromExtraction = ({ name, role }) => {
-  document.querySelector(selectors.name).value = name;
-  document.querySelector(selectors.role).value = role;
-};
+const fillFormFromExtraction = () => {};
 
 const extractTextFromPdf = async (file) => {
   if (!window.pdfjsLib) return "";
@@ -576,6 +771,74 @@ const extractTextFromDocx = async (file) => {
   return result.value.trim();
 };
 
+const extractSection = (lines, headerRegex) => {
+  const startIndex = lines.findIndex((line) => headerRegex.test(line));
+  if (startIndex < 0) return [];
+  const section = [];
+  for (let i = startIndex + 1; i < lines.length; i += 1) {
+    const line = lines[i];
+    if (/^#{1,3}\s|^[A-Z\s]{3,}$/.test(line)) break;
+    if (/(summary|work experience|experience|skills|projects|education|certification)/i.test(line)) break;
+    section.push(line);
+  }
+  return section.filter(Boolean);
+};
+
+const extractBullets = (lines, limit = 4) =>
+  lines
+    .filter((line) => /^[-*•]/.test(line) || /\b(achieved|built|developed|designed|optimized|improved|managed)\b/i.test(line))
+    .map((line) => line.replace(/^[-*•]\s*/, "").trim())
+    .filter(Boolean)
+    .slice(0, limit);
+
+const extractSkills = (lines) => {
+  const skillLine = lines.find((line) => /skills|technologies|stack|tool|language/i.test(line));
+  if (skillLine && skillLine.includes(":")) {
+    return skillLine.split(":")[1].trim();
+  }
+  const skillSection = extractSection(lines, /skills|technologies/i);
+  const flat = skillSection.join(" ");
+  return flat ? flat.replace(/\s+/g, " ").trim() : "";
+};
+
+const extractSummaryFromText = (rawText) => {
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  const summaryLines = extractSection(lines, /summary|about me|profile/i);
+  const summaryText = summaryLines.slice(0, 3).join(" ").trim();
+
+  const experienceLines = extractSection(lines, /work experience|experience/i);
+  const experienceHighlights = extractBullets(experienceLines, 3);
+
+  const projectLines = extractSection(lines, /projects|personal projects/i);
+  const projectHighlights = extractBullets(projectLines, 2);
+
+  const skills = extractSkills(lines);
+
+  const output = [];
+  if (summaryText) output.push(`Summary: ${summaryText}`);
+  if (experienceHighlights.length) {
+    output.push(`Experience Highlights: ${experienceHighlights.join(" · ")}`);
+  }
+  if (projectHighlights.length) {
+    output.push(`Projects: ${projectHighlights.join(" · ")}`);
+  }
+  if (skills) output.push(`Skills: ${skills}`);
+
+  if (!output.length) {
+    const sentences = rawText
+      .split(/\.(\s|$)/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return sentences.slice(0, 2).join(". ").slice(0, 240);
+  }
+
+  return output.join("\n").slice(0, 800);
+};
+
 const handleFile = async (file) => {
   const status = document.querySelector(selectors.uploadStatus);
   if (status) status.textContent = `Processing ${file.name}...`;
@@ -584,12 +847,24 @@ const handleFile = async (file) => {
 
   const fileNameFallback = file.name.replace(/\.[^/.]+$/, "");
   const extension = file.name.split(".").pop()?.toLowerCase() || "";
+  const isMarkdown = extension === "md";
+  const isPdf = file.type === "application/pdf" || extension === "pdf";
+  const isDocx =
+    file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    extension === "docx";
+  const isText = file.type === "text/plain" || extension === "txt" || isMarkdown;
+  const isImage = file.type.startsWith("image/");
+
+  updateDebugInfo([`Type: ${file.type || "(empty)"}`, `Ext: .${extension}`]);
 
   try {
-    if (file.type === "text/plain" || extension === "md") {
+    if (isText) {
+      updateDebugInfo([`Branch: text`, `Type: ${file.type || "(empty)"}`, `Ext: .${extension}`]);
       const text = await file.text();
-      updateDebugInfo([`Text length: ${text.length}`]);
+      updateDebugInfo([`Branch: text`, `Type: ${file.type || "(empty)"}`, `Ext: .${extension}`, `Text length: ${text.length}`]);
       const extracted = mockExtractFromText(text);
+      let summary = await requestSummaryFromLlm(text);
+      if (!summary) summary = extractSummaryFromText(text);
       updatePreview(extracted);
       updateMissingFields(extracted);
       fillFormFromExtraction(extracted);
@@ -607,13 +882,15 @@ const handleFile = async (file) => {
         nationality: extracted.nationality || "—",
         email: extracted.email || "—",
         github: extracted.github || "",
+        summary,
         resumeUrl,
       });
-      saveCandidatesFromTable();
+      saveAndFilter();
       return;
     }
 
-    if (file.type === "application/pdf") {
+    if (isPdf) {
+      updateDebugInfo([`Branch: pdf`, `Type: ${file.type || "(empty)"}`, `Ext: .${extension}`]);
       let text = await extractTextFromPdf(file);
       updateDebugInfo([`PDF text length: ${text.length}`]);
       if (!text || text.length < 40) {
@@ -635,6 +912,8 @@ const handleFile = async (file) => {
       }
       if (text) {
         const extracted = mockExtractFromText(text);
+        let summary = await requestSummaryFromLlm(text);
+        if (!summary) summary = extractSummaryFromText(text);
         updatePreview(extracted);
         updateMissingFields(extracted);
         fillFormFromExtraction(extracted);
@@ -652,18 +931,22 @@ const handleFile = async (file) => {
           nationality: extracted.nationality || "—",
           email: extracted.email || "—",
           github: extracted.github || "",
+          summary,
           resumeUrl,
         });
-        saveCandidatesFromTable();
+        saveAndFilter();
         return;
       }
     }
 
-    if (file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    if (isDocx) {
+      updateDebugInfo([`Branch: docx`, `Type: ${file.type || "(empty)"}`, `Ext: .${extension}`]);
       const text = await extractTextFromDocx(file);
       updateDebugInfo([`DOCX text length: ${text.length}`]);
       if (text) {
         const extracted = mockExtractFromText(text);
+        let summary = await requestSummaryFromLlm(text);
+        if (!summary) summary = extractSummaryFromText(text);
         updatePreview(extracted);
         updateMissingFields(extracted);
         fillFormFromExtraction(extracted);
@@ -681,20 +964,24 @@ const handleFile = async (file) => {
           nationality: extracted.nationality || "—",
           email: extracted.email || "—",
           github: extracted.github || "",
+          summary,
           resumeUrl,
         });
-        saveCandidatesFromTable();
+        saveAndFilter();
         return;
       }
     }
 
-    if (file.type.startsWith("image/")) {
+    if (isImage) {
+      updateDebugInfo([`Branch: image`, `Type: ${file.type || "(empty)"}`, `Ext: .${extension}`]);
       if (status) status.textContent = "Running OCR on image...";
       const imageUrl = URL.createObjectURL(file);
       const text = await extractTextWithOcr(imageUrl);
       updateDebugInfo([`OCR text length: ${text.length}`]);
       if (text) {
         const extracted = mockExtractFromText(text);
+        let summary = await requestSummaryFromLlm(text);
+        if (!summary) summary = extractSummaryFromText(text);
         updatePreview(extracted);
         updateMissingFields(extracted);
         fillFormFromExtraction(extracted);
@@ -712,14 +999,16 @@ const handleFile = async (file) => {
           nationality: extracted.nationality || "—",
           email: extracted.email || "—",
           github: extracted.github || "",
+          summary,
           resumeUrl,
         });
-        saveCandidatesFromTable();
+        saveAndFilter();
         return;
       }
     }
   } catch (error) {
     console.error("Resume parse error", error);
+    updateDebugInfo(["Error during parse", error?.message || String(error)]);
   }
 
   updatePreview({
@@ -750,6 +1039,7 @@ const handleFile = async (file) => {
     nationality: "—",
     email: "—",
     github: "",
+    summary: "",
     resumeUrl,
   });
   saveCandidatesFromTable();
@@ -758,7 +1048,6 @@ const handleFile = async (file) => {
 const setupUpload = () => {
   const uploadInput = document.querySelector(selectors.uploadInput);
   const uploadSelectButton = document.querySelector(selectors.uploadSelectButton);
-  const reviewButton = document.querySelector(selectors.reviewButton);
   const dropZone = document.querySelector(selectors.dropZone);
 
   if (uploadSelectButton && uploadInput) {
@@ -790,23 +1079,12 @@ const setupUpload = () => {
     });
   }
 
-  if (reviewButton) {
-    reviewButton.addEventListener("click", () => {
-      updateFormState();
-      alert("Extracted info applied. Review and add the candidate.");
-    });
-  }
 };
 
-const setupAddButton = () => {
-  const addButton = document.querySelector(selectors.addButton);
-  if (addButton) addButton.addEventListener("click", handleAddCandidate);
-};
 
 document.addEventListener("DOMContentLoaded", () => {
   hydrateCandidates();
   setupUpload();
-  setupAddButton();
   setupRowSelection();
   setupEditForm();
 });
