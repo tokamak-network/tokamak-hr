@@ -20,7 +20,7 @@
 
 body {
   margin: 0;
-  font-family: "IBM Plex Sans", "Space Grotesk", system-ui, -apple-system, sans-serif;
+  font-family: "Public Sans", "IBM Plex Sans", system-ui, -apple-system, sans-serif;
   color: var(--ink);
   background: radial-gradient(circle at top, #1b2330 0%, #0d1117 50%, #090c12 100%);
 }

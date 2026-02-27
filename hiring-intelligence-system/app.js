@@ -252,6 +252,7 @@ const addCandidateRow = ({
   github,
   summary,
   resumeUrl,
+  resumeText,
   id,
   rowIndex,
 }) => {
@@ -261,6 +262,7 @@ const addCandidateRow = ({
   row.setAttribute("data-candidate", "");
   row.dataset.id = id || createId();
   row.dataset.summary = summary || "";
+  row.dataset.resumeText = resumeText || "";
   const displayIndex = rowIndex || tableBody.querySelectorAll("tr[data-candidate]").length + 1;
   row.innerHTML = `
     <td>${displayIndex}</td>
@@ -303,6 +305,7 @@ const parseRow = (row) => {
     email: cells[8]?.textContent?.trim() || "",
     github: cells[9]?.querySelector("a")?.getAttribute("href") || "",
     summary: row.dataset.summary || "",
+    resumeText: row.dataset.resumeText || "",
     resume: cells[10]?.querySelector("a")?.getAttribute("href") || "",
   };
 };
@@ -347,6 +350,7 @@ const renderCandidates = (candidates) => {
       email: candidate.email,
       github: candidate.github,
       summary: candidate.summary,
+      resumeText: candidate.resumeText,
       resumeUrl: candidate.resume,
       rowIndex: index + 1,
     });
@@ -409,6 +413,7 @@ const updateRowFromForm = () => {
   const github = document.querySelector(selectors.editGithub).value.trim();
   const resume = document.querySelector(selectors.editResume).value.trim();
 
+  selectedRow.dataset.resumeText = selectedRow.dataset.resumeText || "";
   cells[1].innerHTML = `<button class="name-link" type="button">${name || "—"}</button>`;
   cells[2].textContent = role || "—";
   cells[3].textContent = stage;
@@ -883,6 +888,7 @@ const handleFile = async (file) => {
         email: extracted.email || "—",
         github: extracted.github || "",
         summary,
+        resumeText: text,
         resumeUrl,
       });
       saveAndFilter();
@@ -932,6 +938,7 @@ const handleFile = async (file) => {
           email: extracted.email || "—",
           github: extracted.github || "",
           summary,
+          resumeText: text,
           resumeUrl,
         });
         saveAndFilter();
@@ -965,6 +972,7 @@ const handleFile = async (file) => {
           email: extracted.email || "—",
           github: extracted.github || "",
           summary,
+          resumeText: text,
           resumeUrl,
         });
         saveAndFilter();
@@ -1000,6 +1008,7 @@ const handleFile = async (file) => {
           email: extracted.email || "—",
           github: extracted.github || "",
           summary,
+          resumeText: text,
           resumeUrl,
         });
         saveAndFilter();
@@ -1040,6 +1049,7 @@ const handleFile = async (file) => {
     email: "—",
     github: "",
     summary: "",
+    resumeText: "",
     resumeUrl,
   });
   saveCandidatesFromTable();
